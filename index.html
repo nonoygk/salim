@@ -1,0 +1,4465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FCECLSP848"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FCECLSP848');
+</script>
+<meta name="apple-mobile-web-app-title" content="サリムのお部屋">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/nonoygk/salim/main/ui/icon.jpg">
+<link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/nonoygk/salim/main/ui/icon.jpg">
+<title>サリムのお部屋 〜王様のひとやすみ〜</title>
+<style>
+  :root {
+    --navy: #17366f;
+    --navy-light: #345c9d;
+    --gold: #d6b15d;
+    --text: #2d3d62;
+    --muted: #8c8068;
+  }
+
+  * { box-sizing: border-box; }
+
+  html,
+  body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  .game,
+  .room,
+  .message,
+  .action-buttons,
+  .menu-launch-button,
+  .gift-card,
+  .item-card,
+  .placement-panel,
+  .menu-overlay {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: #F0F8FF;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .game {
+    max-width: 960px;
+    margin: auto;
+    padding: 16px;
+  }
+
+  .title-logo {
+    width: 580px;
+    max-width: 96%;
+    margin: 0 auto -18px;
+    display: block;
+  }
+
+  .level-box {
+    display: inline-block;
+    margin: 0 auto 12px;
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.86);
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    color: var(--navy);
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  .room {
+    position: relative;
+    scroll-margin-top: 8px;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-image:
+      linear-gradient(rgba(255,250,240,0.04), rgba(255,250,240,0.04)),
+      url("https://raw.githubusercontent.com/nonoygk/salim/main/backgrounds/salim-room-evening.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-clip: border-box;
+    background-color: #ead8bf;
+    border: 3px solid var(--gold);
+    border-radius: 24px;
+    box-shadow: 0 7px 18px rgba(45,61,98,0.16);
+    overflow: hidden;
+  }
+
+  .room-item {
+    position: absolute;
+    display: none;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    transform-origin: center bottom;
+  }
+
+  .room-item.visible { display: block; }
+
+  
+  .item-kingdomMap { left: 71.5%; top: 34.0%; width: 12.5%; z-index: 1; }
+  .item-starMoonTapestry { left: 17.0%; top: 23.5%; width: 11.5%; z-index: 1; }
+  .item-relaxCushions { left: 9.5%; top: 48.0%; width: 15.0%; z-index: 2; }
+  .item-goldIncenseBurner { left: 90.5%; top: 26.5%; width: 4.0%; z-index: 2; }
+  .item-letterPile { left: 84.0%; top: 56.0%; width: 12.0%; z-index: 2; }
+  .item-royalTeaTime { left: 59.5%; top: 48.5%; width: 31.0%; z-index: 3; }
+  .item-razremPlanter { left: 28.0%; top: 40.0%; width: 14.5%; z-index: 1; }
+  .item-salimPlush { left: 62.0%; top: 43.0%; width: 20.0%; z-index: 2; }
+  .item-blueGoldJewelBox { left: 7.5%; top: 60.0%; width: 18.0%; z-index: 3; }
+  .item-starlightLantern { left: 78.5%; top: 42.8%; width: 7.0%; z-index: 2; }
+  .item-starSandCelestialGlobe { left: 0.0%; top: 45.0%; width: 16.5%; z-index: 2; }
+
+  .salim {
+    position: absolute;
+    left: 50%;
+    bottom: 16%;
+    transform: translateX(-50%);
+    width: 27%;
+    max-width: 300px;
+    min-width: 150px;
+    z-index: 4;
+  }
+
+  .salim img {
+    display: block;
+    width: 100%;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.18));
+  }
+
+  .room-visitor {
+    position: absolute;
+    left: 64%;
+    bottom: 16%;
+    width: 27%;
+    max-width: 430px;
+    min-width: 150px;
+    z-index: 4;
+    display: none;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.18));
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .room-visitor.visible {
+    display: block;
+  }
+
+  /* 強制拡大：ファリド・サラ */
+  .room-visitor.farid-visitor {
+    width: 32% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    left: 67% !important;
+    bottom: 12% !important;
+    transform: translateX(-50%) scale(1.30) !important;
+    transform-origin: center bottom !important;
+  }
+
+  .room-visitor.sara-visitor {
+    width: 33% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    left: 68% !important;
+    bottom: 12% !important;
+    transform: translateX(-50%) scale(1.28) !important;
+    transform-origin: center bottom !important;
+  }
+
+  .status-box {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: 55%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 16px;
+    z-index: 6;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+  }
+
+  .points {
+    min-width: 140px;
+    margin: 0;
+    color: var(--navy);
+    font-size: 17px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .status-area {
+    flex: 1;
+    margin: 0;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .bar {
+    width: 100%;
+    height: 12px;
+    margin-top: 4px;
+    overflow: hidden;
+    background: #ebe3d3;
+    border-radius: 999px;
+  }
+
+  .bar-fill {
+    width: 100%;
+    height: 100%;
+    background: var(--navy-light);
+    border-radius: 999px;
+    transition: width 0.3s;
+  }
+
+  .mood-fill { background: #e2b857; }
+
+  .title-badge-box {
+    position: absolute;
+    right: 2%;
+    bottom: 2%;
+    max-width: 40%;
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.88);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    color: var(--navy);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    z-index: 6;
+    line-height: 1.35;
+  }
+
+  .title-badge-label { font-size: 11px; font-weight: bold; }
+  .title-badge-name { font-size: 13px; font-weight: bold; }
+
+  .message {
+    width: 100%;
+    max-width: 760px;
+    min-height: 82px;
+    margin: 12px auto 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    text-align: center;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px auto;
+  }
+
+  .action-buttons button {
+    min-width: 112px;
+    min-height: 48px;
+    padding: 12px 22px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  button {
+    border: 1px solid rgba(214,177,93,0.88);
+    border-radius: 999px;
+    margin: 3px;
+    padding: 10px 18px;
+    background: var(--navy);
+    color: white;
+    font-size: 15px;
+    box-shadow: 0 3px 7px rgba(23,54,111,0.15);
+  }
+
+  button:active { transform: translateY(1px); }
+  .action-buttons button:active { transform: none; }
+
+  button:disabled {
+    background: #b5b0a5;
+    border-color: #b5b0a5;
+    box-shadow: none;
+  }
+
+
+  .gift-grid {
+    width: 100%;
+    max-width: 820px;
+    margin: 8px auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .gift-card {
+    padding: 10px 8px 12px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+  }
+
+  .gift-card img {
+    width: 100%;
+    max-width: 150px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 5px;
+  }
+
+  .gift-name {
+    min-height: 2.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.35;
+  }
+
+  .gift-effect {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .gift-card button {
+    margin-top: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+
+
+  .item-menu-links {
+    width: min(100%, 820px);
+    margin: 0 auto 10px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 16px;
+  }
+
+  .item-menu-links button {
+    margin: 0;
+    min-width: 150px;
+  }
+
+  .placeable-section-label {
+    grid-column: 1 / -1;
+    width: min(100%, 820px);
+    margin: 12px auto 6px;
+    padding: 7px 12px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 999px;
+  }
+
+  .item-grid {
+    width: 100%;
+    max-width: 820px;
+    margin: 8px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .item-card {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 9px;
+    padding: 7px 8px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .item-card img {
+    grid-row: 1 / 3;
+    width: 74px;
+    height: 74px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .item-name {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.35;
+  }
+
+  .item-cost {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .item-card button {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    margin: 0;
+    padding: 7px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+
+  .placement-panel {
+    width: min(100%, 760px);
+    margin: 8px auto 10px;
+    padding: 12px;
+    display: none;
+    background: rgba(255,255,255,0.92);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.08);
+  }
+  .placement-panel.visible { display: block; }
+  .placement-title { margin: 0 0 8px; color: var(--navy); font-size: 14px; font-weight: bold; }
+  .placement-help { margin: 0 0 10px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+  .placement-control-grid { width: 260px; max-width: 100%; margin: 0 auto 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .placement-control-grid button, .placement-size-buttons button, .placement-actions button { margin: 0; min-height: 46px; padding: 12px 15px; font-size: 15px; font-weight: bold; }
+  .placement-size-buttons, .placement-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 7px; }
+  .placement-finish { background: var(--navy); border-color: rgba(214,177,93,0.88); }
+  .placement-empty {
+    width: min(100%, 760px);
+    margin: 8px auto;
+    padding: 14px 12px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  body.placement-mode-active .message,
+  body.placement-mode-active .action-buttons {
+    display: none;
+  }
+
+  body.placement-mode-active .placement-panel {
+    margin-top: 8px;
+  }
+
+  .placement-back {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.96);
+    color: var(--navy);
+    border: 2px solid var(--gold);
+  }
+
+  .achievement-summary {
+    width: 100%;
+    max-width: 760px;
+    margin: 6px auto 8px;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .achievement-grid {
+    width: 100%;
+    max-width: 820px;
+    margin: 8px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .achievement-card {
+    padding: 10px 11px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .achievement-card.locked { opacity: 0.68; }
+
+  .achievement-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .achievement-desc,
+  .achievement-progress {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .achievement-card button {
+    margin: 7px 0 0;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .achievement-toast {
+    position: fixed;
+    left: 50%;
+    top: 14px;
+    z-index: 100;
+    max-width: min(90vw, 460px);
+    padding: 10px 16px;
+    transform: translate(-50%, -18px);
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(255,250,240,0.96);
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(45,61,98,0.2);
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .achievement-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+
+  .collection-summary {
+    width: 100%;
+    max-width: 760px;
+    margin: 6px auto 8px;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .collection-grid {
+    width: 100%;
+    max-width: 820px;
+    margin: 8px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .collection-card {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 9px;
+    padding: 10px 11px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .collection-card.locked { opacity: 0.58; }
+
+  .collection-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(240,248,255,0.92);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    font-size: 27px;
+  }
+
+  .collection-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .collection-name {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.35;
+  }
+
+  .collection-date,
+  .collection-desc,
+  .collection-comment {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .collection-comment {
+    color: var(--text);
+  }
+
+  .collection-card button {
+    grid-column: 1 / 3;
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .salim-gift-image {
+    width: min(56vw, 220px);
+    display: block;
+    margin: -4px auto 8px;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.14));
+  }
+  .album-summary {
+    width: 100%;
+    max-width: 760px;
+    margin: 6px auto 8px;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .album-grid {
+    width: 100%;
+    max-width: 820px;
+    margin: 8px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .album-card {
+    padding: 10px 10px 12px;
+    background: rgba(255,255,255,0.84);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .album-card.locked { opacity: 0.62; }
+
+  .album-thumb {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(240,248,255,0.92);
+    border: 2px solid rgba(214,177,93,0.75);
+    border-radius: 14px;
+    color: var(--navy);
+    font-size: 34px;
+    font-weight: bold;
+  }
+
+  .album-thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .album-name {
+    margin-top: 8px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.4;
+  }
+
+  .album-condition,
+  .album-comment {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .album-comment { color: var(--text); }
+
+  .album-card button {
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .album-viewer-window {
+    width: min(96vw, 620px);
+    height: 100dvh;
+    margin: 0 auto;
+    padding: calc(10px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .album-viewer-image-wrap {
+    width: min(92vw, 520px);
+    max-height: 76dvh;
+    padding: 8px;
+    background: rgba(255,255,255,0.94);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(45,61,98,0.22);
+  }
+
+  .album-viewer-image-wrap img {
+    width: 100%;
+    max-height: calc(76dvh - 20px);
+    display: block;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .album-viewer-title {
+    max-width: min(92vw, 520px);
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .album-viewer-window button {
+    min-width: 130px;
+  }
+
+
+
+
+  
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  .menu-launch-buttons {
+    width: min(100%, 760px);
+    margin: 10px auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .menu-launch-button {
+    min-width: 0;
+    margin: 0;
+    min-height: 48px;
+    padding: 10px 9px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    color: var(--navy);
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.08);
+  }
+
+  .menu-launch-icon {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .menu-launch-label {
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .menu-launch-sub {
+    display: none;
+  }
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    background: rgba(240,248,255,0.985);
+    text-align: center;
+  }
+
+  .menu-overlay.open {
+    display: flex;
+  }
+
+  .menu-window {
+    width: min(100%, 960px);
+    height: 100dvh;
+    max-height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #F0F8FF;
+  }
+
+  .menu-header {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 88px;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.96);
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(45,61,98,0.1);
+  }
+
+  .menu-header h2 {
+    display: block;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--navy);
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .menu-back {
+    min-width: 0;
+    margin: 0;
+    padding: 8px 9px;
+    background: var(--navy);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .menu-header-spacer {
+    width: 88px;
+  }
+
+  .menu-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
+  }
+
+
+  .boost-box {
+    display: none;
+    width: fit-content;
+    margin: -4px auto 8px;
+    padding: 5px 12px;
+    background: rgba(255,250,240,0.94);
+    border: 1px solid var(--gold);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 3px 8px rgba(45,61,98,0.08);
+  }
+
+  .boost-box.visible { display: block; }
+
+  .event-window {
+    width: min(92%, 520px);
+    margin: auto;
+    padding: 18px 15px;
+    background: #F0F8FF;
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(45,61,98,0.2);
+  }
+
+  .event-window h2 {
+    margin: 0 0 12px;
+    color: var(--navy);
+    font-size: 20px;
+  }
+
+  .event-line {
+    margin: 10px 0;
+    padding: 13px 12px;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+
+  .event-meta {
+    margin: 8px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .event-choice-buttons {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .event-choice-buttons button {
+    width: 100%;
+    margin: 0;
+    white-space: normal;
+    line-height: 1.45;
+  }
+
+  .event-skip {
+    margin-top: 10px;
+    background: #958b79;
+    border-color: #958b79;
+  }
+
+  .settings-card {
+    width: min(100%, 760px);
+    margin: 8px auto;
+    padding: 16px 14px;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+  }
+
+  .settings-card h3 {
+    margin: 0 0 8px;
+    color: var(--navy);
+    font-size: 16px;
+  }
+
+  .settings-card p {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .birthday-form {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .birthday-form select {
+    min-width: 88px;
+    padding: 9px 10px;
+    border: 1px solid rgba(214,177,93,0.9);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.96);
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .birthday-form button {
+    margin: 0;
+  }
+
+
+
+  .save-transfer-area {
+    margin-top: 10px;
+  }
+
+  .save-transfer-textarea {
+    width: 100%;
+    min-height: 118px;
+    margin: 8px 0 10px;
+    padding: 10px;
+    resize: vertical;
+    border: 1px solid rgba(214,177,93,0.9);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.96);
+    color: var(--text);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .save-transfer-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .save-transfer-buttons button {
+    margin: 0;
+  }
+
+  .save-transfer-note {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .reset-area {
+    margin-top: 30px;
+    padding-top: 16px;
+    border-top: 1px dashed #d7c899;
+  }
+
+  .reset-note {
+    margin: 0 0 4px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .reset { background: #958b79; border-color: #958b79; }
+
+  @media (max-width: 600px) {
+    .game { padding: 6px; }
+    .title-logo { width: 310px; max-width: 92%; margin-bottom: -20px; }
+    .level-box { margin-bottom: 6px; padding: 5px 13px; font-size: 12px; }
+    .room { aspect-ratio: 4 / 3; border-radius: 18px; }
+    .salim { width: 32%; bottom: 16%; }
+    .room-visitor { left: 64%; width: 32%; bottom: 16%; min-width: 0; }
+
+    /* スマホ版：強制拡大 */
+    .room-visitor.farid-visitor {
+      width: 32% !important;
+      left: 67% !important;
+      bottom: 12% !important;
+      transform: translateX(-50%) scale(1.30) !important;
+    }
+
+    .room-visitor.sara-visitor {
+      width: 33% !important;
+      left: 68% !important;
+      bottom: 12% !important;
+      transform: translateX(-50%) scale(1.28) !important;
+    }
+    .status-box { width: 64%; gap: 6px; padding: 6px 8px; border-radius: 12px; }
+    .points { min-width: 84px; font-size: 10px; }
+    .status-area { font-size: 8px; }
+    .bar { height: 7px; margin-top: 2px; }
+    .title-badge-box { padding: 5px 9px; border-radius: 14px; }
+    .title-badge-label { font-size: 8px; }
+    .title-badge-name { font-size: 9px; }
+    .message { min-height: 62px; margin: 8px auto; padding: 10px; font-size: 13px; }
+    .action-buttons {
+      width: fit-content;
+      margin: 6px auto 10px;
+      padding: 4px 7px;
+      background: rgba(240,248,255,0.88);
+      border: 1px solid rgba(214,177,93,0.55);
+      border-radius: 999px;
+    }
+    .action-buttons button {
+      min-width: 96px;
+      min-height: 44px;
+      padding: 10px 18px;
+      font-size: 14px;
+    }
+    button { padding: 7px 13px; font-size: 12px; }
+    .gift-grid { grid-template-columns: 1fr; gap: 6px; }
+    .gift-card {
+      display: grid;
+      grid-template-columns: 66px minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      align-items: center;
+      column-gap: 8px;
+      padding: 6px 7px;
+      border-radius: 13px;
+      text-align: left;
+    }
+    .gift-card img {
+      grid-row: 1 / 3;
+      width: 62px;
+      height: 62px;
+      margin: 0;
+    }
+    .gift-name {
+      min-height: 0;
+      justify-content: flex-start;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .gift-effect { margin-top: 1px; font-size: 9px; }
+    .gift-card button {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      margin: 0;
+      padding: 7px 8px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .item-menu-links { gap: 6px; padding: 8px; }
+    .item-menu-links button { min-width: 128px; font-size: 11px; }
+    .item-grid { grid-template-columns: 1fr; gap: 6px; }
+    .item-card {
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      column-gap: 7px;
+      padding: 5px 6px;
+      border-radius: 12px;
+    }
+    .item-card img { width: 54px; height: 54px; }
+    .item-name { font-size: 11px; }
+    .item-cost { font-size: 9px; }
+    .item-card button { padding: 6px 7px; font-size: 10px; }
+    .placement-panel { margin: 6px auto 9px; padding: 9px 8px 11px; border-radius: 15px; }
+    .placement-title { font-size: 12px; }
+    .placement-help { font-size: 9px; }
+    .placement-control-grid { width: 240px; gap: 7px; }
+    .placement-control-grid button, .placement-size-buttons button, .placement-actions button { min-height: 42px; padding: 10px 12px; font-size: 13px; }
+    .achievement-grid { grid-template-columns: 1fr; gap: 6px; }
+    .achievement-summary { padding: 7px 9px; font-size: 11px; }
+    .achievement-card { padding: 8px 9px; border-radius: 12px; }
+    .achievement-top { font-size: 11px; }
+    .achievement-desc, .achievement-progress { font-size: 9px; }
+    .achievement-card button { padding: 5px 8px; font-size: 10px; }
+    .achievement-toast { top: 8px; font-size: 11px; padding: 8px 12px; }
+
+    .collection-grid { grid-template-columns: 1fr; gap: 6px; }
+    .collection-summary { padding: 7px 9px; font-size: 11px; }
+    .collection-card {
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 7px;
+      padding: 8px 9px;
+      border-radius: 12px;
+    }
+    .collection-icon { width: 42px; height: 42px; border-radius: 12px; font-size: 22px; }
+    .collection-name { font-size: 11px; }
+    .collection-date, .collection-desc, .collection-comment { font-size: 9px; }
+    .salim-gift-image { width: min(52vw, 170px); }
+    .album-grid { grid-template-columns: 1fr; gap: 8px; }
+    .album-summary { padding: 7px 9px; font-size: 11px; }
+    .album-card {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 13px;
+    }
+    .album-thumb { width: 72px; height: 108px; font-size: 25px; }
+    .album-name { margin-top: 0; font-size: 11px; }
+    .album-condition, .album-comment { font-size: 9px; }
+    .album-card button { grid-column: 1 / 3; font-size: 10px; }
+
+
+
+    .menu-launch-buttons { gap: 6px; margin-top: 7px; }
+    .menu-launch-button { min-height: 44px; padding: 9px 5px; border-radius: 999px; }
+    .menu-launch-icon { font-size: 13px; }
+    .menu-launch-label { font-size: 10px; }
+    .menu-header { grid-template-columns: 76px minmax(0, 1fr) 76px; padding: 8px 9px; }
+    .menu-header h2 { font-size: 17px; }
+    .menu-back { padding: 7px 7px; font-size: 11px; }
+    .menu-header-spacer { width: 76px; }
+    .menu-scroll { padding: 9px 7px calc(14px + env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+<div class="game">
+  <img
+    class="title-logo"
+    src="https://raw.githubusercontent.com/nonoygk/salim/main/ui/salim-title.png"
+    alt="サリムのお部屋 〜王様のひとやすみ〜"
+  >
+
+  <div class="level-box" id="levelBox">Lv.1｜王宮を訪れた客人</div>
+  <div class="boost-box" id="boostBox"></div>
+
+  <div class="room" id="roomAnchor">
+    <div class="title-badge-box">
+      <div class="title-badge-label">🏅称号</div>
+      <div class="title-badge-name" id="selectedTitleName">なし</div>
+    </div>
+
+    <div id="roomItems" aria-hidden="true"></div>
+
+    <div class="salim">
+      <img
+        id="salimImage"
+        src="https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-normal.png"
+        alt="ちびサリム"
+      >
+    </div>
+
+    <img class="room-visitor" id="roomVisitor" src="" alt="">
+
+    <div class="status-box">
+      <div class="points">
+        💖：<span id="affinity">0</span>
+      </div>
+
+      <div class="status-area">
+        元気：<span id="energyText">50</span>%
+        <div class="bar"><div class="bar-fill" id="energyBar"></div></div>
+      </div>
+
+      <div class="status-area">
+        ご機嫌：<span id="moodText">50</span>%
+        <div class="bar"><div class="bar-fill mood-fill" id="moodBar"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="message" id="message">「来たか。待ってたぞ」</div>
+
+  <div class="action-buttons">
+    <button onclick="petSalim()">なでる</button>
+    <button onclick="pokeSalim()">つつく</button>
+  </div>
+
+  <div class="placement-panel" id="placementPanel">
+    <div class="placement-title" id="placementPanelTitle">アイテム配置を調整中</div>
+    <p class="placement-help">位置・サイズ・奥行き・左右反転を調整できます。部屋を見ながら、少しずつ動かしてください。</p>
+    <div class="placement-control-grid" aria-label="配置調整">
+      <span></span><button type="button" onclick="adjustActiveItemPosition(0, -1)">↑</button><span></span>
+      <button type="button" onclick="adjustActiveItemPosition(-1, 0)">←</button>
+      <button type="button" onclick="adjustActiveItemPosition(0, 1)">↓</button>
+      <button type="button" onclick="adjustActiveItemPosition(1, 0)">→</button>
+    </div>
+    <div class="placement-size-buttons">
+      <button type="button" onclick="adjustActiveItemSize(-1)">小さく</button>
+      <button type="button" onclick="adjustActiveItemSize(1)">大きく</button>
+    </div>
+    <div class="placement-size-buttons">
+      <button type="button" onclick="adjustActiveItemDepth(-1)">奥へ</button>
+      <button type="button" onclick="adjustActiveItemDepth(1)">手前へ</button>
+    </div>
+    <div class="placement-size-buttons">
+      <button type="button" onclick="toggleActiveItemFlip()">左右反転</button>
+    </div>
+    <div class="placement-actions">
+      <button type="button" onclick="resetActiveItemPlacement()">初期位置に戻す</button>
+      <button type="button" onclick="putAwayActivePlacementItem()">しまう</button>
+      <button class="placement-finish" type="button" onclick="finishPlacementMode()">保存して閉じる</button>
+    </div>
+    <button class="placement-back" type="button" onclick="cancelPlacementMode()">戻る</button>
+  </div>
+
+  <div class="menu-launch-buttons" aria-label="メニュー">
+    <button class="menu-launch-button" type="button" onclick="openMenu('giftMenu')">
+      <span class="menu-launch-icon">🫖</span>
+      <span class="menu-launch-label">差し入れ</span>
+      <span class="menu-launch-sub">3種類</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('itemMenu')">
+      <span class="menu-launch-icon">🪄</span>
+      <span class="menu-launch-label">アイテム</span>
+      <span class="menu-launch-sub" id="itemMenuCount">0 / 13</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('placementMenu')">
+      <span class="menu-launch-icon">↔️</span>
+      <span class="menu-launch-label">配置</span>
+      <span class="menu-launch-sub">調整</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('achievementMenu')">
+      <span class="menu-launch-icon">🏅</span>
+      <span class="menu-launch-label">実績</span>
+      <span class="menu-launch-sub" id="achievementMenuCount">0 / 69</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('collectionMenu')">
+      <span class="menu-launch-icon">🎁</span>
+      <span class="menu-launch-label">贈り物</span>
+      <span class="menu-launch-sub" id="collectionMenuCount">0 / 7</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('albumMenu')">
+      <span class="menu-launch-icon">🖼️</span>
+      <span class="menu-launch-label">アルバム</span>
+      <span class="menu-launch-sub" id="albumMenuCount">0 / 3</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="location.href='outing.html'">
+      <span class="menu-launch-icon">🗺️</span>
+      <span class="menu-launch-label">おでかけ</span>
+      <span class="menu-launch-sub">ラズレム散策</span>
+    </button>
+    <button class="menu-launch-button" type="button" onclick="openMenu('settingsMenu')">
+      <span class="menu-launch-icon">⚙️</span>
+      <span class="menu-launch-label">設定</span>
+      <span class="menu-launch-sub">データ管理</span>
+    </button>
+  </div>
+</div>
+
+<div class="menu-overlay" id="giftMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'giftMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="giftMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('giftMenu')">← 戻る</button>
+      <h2 id="giftMenuTitle">🫖 差し入れ</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="gift-grid">
+        <div class="gift-card">
+          <img src="https://raw.githubusercontent.com/nonoygk/salim/main/foods/milk-tea.png" alt="王宮はちみつミルクティー">
+          <div class="gift-name">王宮はちみつ<br>ミルクティー</div>
+          <div class="gift-effect">元気 +15｜ご機嫌 +2</div>
+          <button onclick="giveGift('milkTea')">渡す 💖100</button>
+        </div>
+
+        <div class="gift-card">
+          <img src="https://raw.githubusercontent.com/nonoygk/salim/main/foods/dates-nuts.png" alt="オアシスのデーツとナッツ">
+          <div class="gift-name">オアシスの<br>デーツとナッツ</div>
+          <div class="gift-effect">元気 +30｜ご機嫌 +5</div>
+          <button onclick="giveGift('datesNuts')">渡す 💖300</button>
+        </div>
+
+        <div class="gift-card">
+          <img src="https://raw.githubusercontent.com/nonoygk/salim/main/foods/jewel-jelly.png" alt="星彩の宝石ゼリー">
+          <div class="gift-name">星彩の<br>宝石ゼリー</div>
+          <div class="gift-effect">元気 +45｜ご機嫌 +10</div>
+          <button onclick="giveGift('jewelJelly')">渡す 💖800</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="itemMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'itemMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="itemMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('itemMenu')">← 戻る</button>
+      <h2 id="itemMenuTitle">🪄 アイテム</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="item-menu-links">
+        <button type="button" onclick="openMenu('collectionMenu')">🎁 贈り物一覧へ</button>
+        <button type="button" onclick="openMenu('souvenirMenu')">🧳 お土産一覧へ</button>
+      </div>
+      <div class="item-grid" id="itemGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="placementMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'placementMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="placementMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('placementMenu')">← 戻る</button>
+      <h2 id="placementMenuTitle">↔️ アイテム配置</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="placement-empty" id="placementEmpty">購入済みアイテム・受け取った贈り物・入手したお土産を選ぶと、位置・サイズ・奥行き・左右反転を調整できます。</div>
+      <div class="item-grid" id="placementGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="achievementMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'achievementMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="achievementMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('achievementMenu')">← 戻る</button>
+      <h2 id="achievementMenuTitle">🏅 実績・称号</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="achievement-summary" id="achievementSummary"></div>
+      <div class="achievement-grid" id="achievementGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="collectionMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'collectionMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="collectionMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('collectionMenu')">← 戻る</button>
+      <h2 id="collectionMenuTitle">🎁 サリムからの贈り物</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="collection-summary" id="collectionSummary"></div>
+      <div class="collection-grid" id="collectionGrid"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="menu-overlay" id="souvenirMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'souvenirMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="souvenirMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('souvenirMenu')">← 戻る</button>
+      <h2 id="souvenirMenuTitle">🧳 おでかけのお土産</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="collection-summary" id="souvenirSummary">集めたお土産：0 / 0</div>
+      <div class="collection-grid" id="souvenirGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="albumMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'albumMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="albumMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('albumMenu')">← 戻る</button>
+      <h2 id="albumMenuTitle">🖼️ アルバム</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="album-summary" id="albumSummary"></div>
+      <div class="album-grid" id="albumGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="albumViewerMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'albumViewerMenu')">
+  <div class="album-viewer-window" role="dialog" aria-modal="true" aria-labelledby="albumViewerTitle">
+    <div class="album-viewer-title" id="albumViewerTitle">アルバム</div>
+    <div class="album-viewer-image-wrap">
+      <img id="albumViewerImage" src="" alt="">
+    </div>
+    <button type="button" onclick="closeMenu('albumViewerMenu')">一覧に戻る</button>
+  </div>
+</div>
+
+<div class="menu-overlay" id="settingsMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'settingsMenu')">
+  <div class="menu-window" role="dialog" aria-modal="true" aria-labelledby="settingsMenuTitle">
+    <div class="menu-header">
+      <button class="menu-back" type="button" onclick="closeMenu('settingsMenu')">← 戻る</button>
+      <h2 id="settingsMenuTitle">⚙️ 設定</h2>
+      <div class="menu-header-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="menu-scroll">
+      <div class="settings-card">
+        <h3>保存データ</h3>
+        <p>💖ポイント、ステータス、購入済みアイテム、実績、選択中の称号は、端末のブラウザへ自動保存されます。</p>
+        <p id="loginStats">累計ログイン：0日｜連続ログイン：0日</p>
+      </div>
+      <div class="settings-card">
+        <h3>あなたの誕生日</h3>
+        <p id="userBirthdayStatus">あなたの誕生日：未設定</p>
+        <div class="birthday-form" id="userBirthdayForm">
+          <select id="userBirthdayMonth" aria-label="誕生月"></select>
+          <select id="userBirthdayDay" aria-label="誕生日"></select>
+          <button type="button" onclick="setUserBirthday()">誕生日を登録する</button>
+        </div>
+        <p id="userBirthdayNote">※一度登録した誕生日は変更できません。</p>
+      </div>
+      <div class="settings-card">
+        <h3>セーブデータの引き継ぎ</h3>
+        <p>URL移転や機種変更をするときは、現在のセーブデータを文字列として書き出して保存できます。新しいページで読み込むと、💖ポイント、ステータス、購入済みアイテム、配置、しまった状態、実績、贈り物、アルバムなどを引き継げます。</p>
+        <div class="save-transfer-area">
+          <textarea class="save-transfer-textarea" id="saveTransferText" placeholder="ここにセーブデータの文字列が表示されます。読み込むときは、保存しておいた文字列をここに貼り付けてください。"></textarea>
+          <div class="save-transfer-buttons">
+            <button type="button" onclick="exportSaveData()">セーブデータを書き出す</button>
+            <button type="button" onclick="importSaveData()">セーブデータを読み込む</button>
+            <button type="button" onclick="clearSaveTransferText()">入力欄を空にする</button>
+          </div>
+          <div class="save-transfer-note" id="saveTransferNote">※読み込みを実行すると、現在の保存データに上書きされます。</div>
+        </div>
+      </div>
+      <div class="settings-card reset-area">
+        <h3>最初からやり直す</h3>
+        <p class="reset-note">保存データを初期状態へ戻す場合のみ押してください。この操作は取り消せません。</p>
+        <button class="reset" type="button" onclick="resetGame()">リセット</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="menu-overlay" id="loginBonusMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'loginBonusMenu')">
+  <div class="event-window" role="dialog" aria-modal="true" aria-labelledby="loginBonusTitle">
+    <h2 id="loginBonusTitle">🎁 今日のひとこと</h2>
+    <div class="event-line" id="loginBonusLine"></div>
+    <div class="event-meta" id="loginBonusReward"></div>
+    <div class="event-meta" id="loginBonusStats"></div>
+    <button type="button" onclick="closeMenu('loginBonusMenu')">受け取る</button>
+  </div>
+</div>
+
+<div class="menu-overlay" id="choiceEventMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'choiceEventMenu')">
+  <div class="event-window" role="dialog" aria-modal="true" aria-labelledby="choiceEventTitle">
+    <h2 id="choiceEventTitle">✨ 小さな出来事</h2>
+    <div class="event-line" id="choiceEventPrompt"></div>
+    <div class="event-choice-buttons" id="choiceEventButtons"></div>
+    <button class="event-skip" type="button" onclick="skipChoiceEvent()">今はそっとしておく</button>
+  </div>
+</div>
+
+<div class="menu-overlay" id="salimGiftEventMenu" aria-hidden="true" onclick="closeMenuFromBackdrop(event, 'salimGiftEventMenu')">
+  <div class="event-window" role="dialog" aria-modal="true" aria-labelledby="salimGiftEventTitle">
+    <h2 id="salimGiftEventTitle">🎁 サリムからの贈り物</h2>
+    <img class="salim-gift-image" id="salimGiftEventImage" src="https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-gift.png" alt="贈り物を差し出すサリム">
+    <div class="event-line" id="salimGiftEventLine"></div>
+    <div class="event-meta" id="salimGiftEventReward"></div>
+    <div class="event-meta" id="salimGiftEventDetail"></div>
+    <button type="button" onclick="closeMenu('salimGiftEventMenu')">受け取る</button>
+  </div>
+</div>
+
+<div class="achievement-toast" id="achievementToast"></div>
+
+<script>
+  const STORAGE_PREFIX = "salimRoomPrototype_v1_";
+
+  const IMAGES = {
+    normal: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-normal.png",
+    blink: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-blink.png",
+    happy: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-happy.png",
+    superhappy: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-superhappy.png",
+    tired: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-tired.png",
+    exhausted: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-exhausted.png",
+    petted: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-petted.png",
+    poked: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-poked.png",
+    gift: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-gift.png",
+    milkTea: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-milk-tea.png",
+    datesNuts: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-dates-nuts.png",
+    jewelJelly: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-jewel-jelly.png"
+  };
+
+  const ROOM_VISITOR_IMAGES = {
+    farid: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/farid-chibi.png",
+    sara: "https://raw.githubusercontent.com/nonoygk/salim/main/characters/sara-chibi.png"
+  };
+
+  const BACKGROUND_IMAGES = {
+    morning: "https://raw.githubusercontent.com/nonoygk/salim/main/backgrounds/salim-room-morning.png",
+    day: "https://raw.githubusercontent.com/nonoygk/salim/main/backgrounds/salim-room-day.png",
+    evening: "https://raw.githubusercontent.com/nonoygk/salim/main/backgrounds/salim-room-evening.png",
+    night: "https://raw.githubusercontent.com/nonoygk/salim/main/backgrounds/salim-room-night.png"
+  };
+
+
+  const ITEMS = [
+    { id: "kingdomMap", name: "金縁の王国地図", price: 1000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/kingdom-map.png", message: "これがあれば、国の話もしやすいな" },
+    { id: "starMoonTapestry", name: "星月のタペストリー", price: 2000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/star-moon-tapestry.png", message: "悪くない。少し部屋らしくなってきた" },
+    { id: "relaxCushions", name: "くつろぎクッション", price: 3500, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/relax-cushions.png", message: "ははっ、随分とくつろぐ気満々だな？" },
+    { id: "goldIncenseBurner", name: "砂金の香炉", price: 6000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gold-incense-burner.png", message: "この香りなら、落ち着いて休めそうだ" },
+    { id: "letterPile", name: "書簡の山", price: 10000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/letter-pile.png", message: "……これは休めというより、働けということか？" },
+    { id: "royalTeaTime", name: "王様ティータイム", price: 30000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/royal-tea-time.png", message: "いいな。せっかくだ、少し付き合ってくれ" },
+    { id: "blueGoldDisplayStand", name: "青金の飾り台", price: 50000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/blue-gold-display-stand.png", message: "小物を飾るにはちょうどいいな。お前の土産も置いてみるか？" },
+    { id: "razremPlanter", name: "ラズレムの緑鉢", price: 80000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/razrem-planter.png", message: "部屋が明るくなったな。今度、一緒に庭園に行かないか？" },
+    { id: "salimPlush", name: "サリムのぬいぐるみ", price: 100000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/nui.png", message: "俺に似てる？ははっ、妙に照れるな" },
+    { id: "faridPlush", name: "ファリドのぬいぐるみ", price: 150000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/farid-nui.png", message: "ファリドに見せたら、どんな顔をするだろうな" },
+    { id: "blueGoldJewelBox", name: "青金の宝石箱", price: 200000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/blue-gold-jewel-box.png", message: "綺麗な箱だな。さて、何を入れようか" },
+    { id: "starlightLantern", name: "星灯りのランタン", price: 500000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/starlight-lantern.png", message: "夜にちょうどいい灯りだ。気に入った" },
+    { id: "starSandCelestialGlobe", name: "星砂の天球儀", price: 1000000, image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/star-sand-celestial-globe.png", message: "見事だな。眺めているだけでも飽きない" }
+  ];
+
+  const DEFAULT_ITEM_LAYOUTS = {
+    kingdomMap: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    starMoonTapestry: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    relaxCushions: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    goldIncenseBurner: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    letterPile: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    royalTeaTime: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    razremPlanter: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    salimPlush: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    faridPlush: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    blueGoldJewelBox: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    blueGoldDisplayStand: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    starlightLantern: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false },
+    starSandCelestialGlobe: { left: 62.0, top: 43.0, width: 20.0, zIndex: 2, flip: false }
+  };
+
+  const ALBUM_CARDS = [
+    {
+      id: "lv10Acquaintance",
+      name: "顔なじみ記念カード",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/album/album-lv10-acquaintance.jpg",
+      unlockLevel: 10,
+      conditionText: "Lv.10｜顔なじみになる",
+      comment: "最初はただの客人だったはずなのに、不思議なもんだな"
+    },
+    {
+      id: "lv25CloseFriend",
+      name: "親しい友人記念カード",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/album/album-lv25-close-friend.jpg",
+      unlockLevel: 25,
+      conditionText: "Lv.25｜親しい友人になる",
+      comment: "お前と庭を歩く時間は、思ったより悪くない"
+    },
+    {
+      id: "lv50Crush",
+      name: "心惹かれる相手記念カード",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/album/album-lv50-crush.jpg",
+      unlockLevel: 50,
+      conditionText: "Lv.50｜心惹かれる相手になる",
+      comment: "茶を飲むだけの時間が、こんなに特別になるなんてな"
+    }
+  ];
+
+  const SALIM_GIFTS = [
+    {
+      id: "palaceSweets",
+      icon: "🍬",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-palace-sweets.png",
+      name: "王宮の砂糖菓子",
+      description: "王宮の厨房で作られた、宝石のように甘い砂糖菓子。",
+      comment: "甘いものは好きか？今日はお前の分も用意させた",
+      reward: 600,
+      conditionType: "level",
+      conditionValue: 10,
+      conditionText: "レベル10以上"
+    },
+    {
+      id: "goldBookmark",
+      icon: "🔖",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-gold-bookmark.png",
+      name: "金細工のしおり",
+      description: "細かな文様が入った、王宮職人の金細工のしおり。",
+      comment: "書簡に埋もれているより、お前の手元にある方がいい",
+      reward: 1200,
+      conditionType: "login",
+      conditionValue: 10,
+      conditionText: "累計ログイン10日"
+    },
+    {
+      id: "blueGlassBottle",
+      icon: "🧴",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-blue-glass-bottle.png",
+      name: "青硝子の小瓶",
+      description: "ほのかに甘い香りのする、青い硝子の小瓶。",
+      comment: "香りが気に入ってな。お前にも似合うと思った",
+      reward: 200,
+      conditionType: "level",
+      conditionValue: 20,
+      conditionText: "レベル20以上"
+    },
+    {
+      id: "desertRosePressed",
+      icon: "🌹",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-desert-rose-pressed.png",
+      name: "砂漠薔薇の押し花",
+      description: "ラズレムの庭園で咲いた、小さな砂漠薔薇の押し花。",
+      comment: "庭園で見つけた。綺麗だったから取っておいたんだ",
+      reward: 250,
+      conditionType: "login",
+      conditionValue: 20,
+      conditionText: "累計ログイン20日"
+    },
+    {
+      id: "starMoonAmulet",
+      icon: "🌙",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-star-moon-amulet.png",
+      name: "星月の護符",
+      description: "星と月の意匠が刻まれた、王宮の小さな護符。",
+      comment: "お守りみたいなものだ。持っておけ",
+      reward: 500,
+      conditionType: "level",
+      conditionValue: 30,
+      conditionText: "レベル30以上"
+    },
+    {
+      id: "smallBlueJewel",
+      icon: "💎",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-small-blue-jewel.png",
+      name: "小さな青い宝石",
+      description: "夜のオアシスのように深く青い、小粒の宝石。",
+      comment: "お前の目の色に似ている気がしてな。……受け取っておけ",
+      reward: 800,
+      conditionType: "login",
+      conditionValue: 30,
+      conditionText: "累計ログイン30日"
+    },
+    {
+      id: "salimLetter",
+      icon: "💌",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/gift-salim-letter.png",
+      name: "誕生日の手紙",
+      description: "サリムの誕生日に渡された、丁寧に封をされた特別な手紙。",
+      comment: "俺の誕生日を一緒に過ごしてくれてありがとう。来年も祝ってくれるか？",
+      reward: 1000,
+      conditionType: "birthday",
+      conditionValue: 730,
+      conditionText: "7月30日"
+    },
+    {
+      id: "userBirthdayLapis",
+      icon: "💎",
+      image: "https://raw.githubusercontent.com/nonoygk/salim/main/items/%20%20%20%20gift-birthday-lapis.png",
+      name: "星誓の青金石",
+      description: "あなたの誕生日を祝うために、サリムが選んだ青と金の小さな宝石。星明かりの下で、静かにきらめいている。",
+      comment: "誕生日おめでとう。お前が生まれた日を、俺にも祝わせてくれ",
+      reward: 10000,
+      conditionType: "userBirthday",
+      conditionValue: 0,
+      conditionText: "あなたの誕生日"
+    }
+  ];
+
+
+  const OUTING_SOUVENIRS = [
+    { id: "palaceFlowerBookmark", name: "王宮庭園の月白花押し栞", placeName: "フィルダール宮・王宮前庭園", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-palace-flower-bookmark.png", description: "王宮庭園の月白花を閉じ込めた、上品な押し花の栞。", comment: "庭の花を気に入ったなら、これを持って帰るといい" },
+    { id: "palaceMedal", name: "フィルダール宮の小さな記念章", placeName: "フィルダール宮・王宮前庭園", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-palace-medal.png", description: "フィルダール宮を模した、青と金の小さな記念章。", comment: "旅の記念にはちょうどいいだろ。……少し派手か？" },
+    { id: "spiceWrap", name: "彩り香辛料包み", placeName: "中央大市場", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-spice-wrap.png", description: "市場で人気の香辛料を詰めた、青と金の布包み。", comment: "料理に使ってもいいが、香りだけでもラズレムを思い出せる" },
+    { id: "wovenCharm", name: "ラズレム織りの布飾り", placeName: "中央大市場", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-woven-charm.png", description: "青と金の刺繍が美しい、ラズレム織りの布飾り。", comment: "その色、お前に似合うと思ってな" },
+    { id: "starIncense", name: "星香の練り香", placeName: "香油通り", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-star-incense.png", description: "星空を思わせる装飾ケースに入った、穏やかな香りの練り香。", comment: "眠る前に使うといい。悪い夢くらいなら、遠ざけてくれるかもな" },
+    { id: "blueMoonOil", name: "青月香の香油瓶", placeName: "香油通り", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-blue-moon-oil.png", description: "夜向けの少し大人っぽい香りを閉じ込めた、青い香油瓶。", comment: "この香りは……まあ、二人きりの時にでも試せばいい" },
+    { id: "waterGlassCharm", name: "水鏡の青い硝子飾り", placeName: "水鏡の回廊", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-water-glass-charm.png", description: "水面に映る夜景を閉じ込めたような、青い硝子の飾り。", comment: "水鏡の回廊らしい土産だな。光にかざすと綺麗だ" },
+    { id: "lampStoneCarving", name: "灯映りの小さな石細工", placeName: "水鏡の回廊", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-lamp-stone-carving.png", description: "灯火と水路をかたどった、手のひらサイズの石細工。", comment: "職人の仕事だな。小さいが、よくできている" },
+    { id: "starSandBottle", name: "星砂の小瓶", placeName: "星見の丘", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-star-sand-bottle.png", description: "星見の丘で手に入る、夜空のようにきらめく砂の小瓶。", comment: "星を持って帰る、なんてな。悪くないだろ" },
+    { id: "nightBlueRibbon", name: "夜風の青いリボン", placeName: "星見の丘", image: "https://raw.githubusercontent.com/nonoygk/salim/main/outing/souvenir-night-blue-ribbon.png", description: "夜風に揺れる星空を思わせる、深い青のリボン。", comment: "星の下で見ると、もっと綺麗に見えるかもしれないな" }
+  ];
+
+  const ACHIEVEMENTS = [
+    { id: "affinity100", name: "はじめての一歩", description: "累計💖を100集める", title: "観光客", current: function() { return totalAffinityEarned; }, target: 100 },
+    { id: "affinity500", name: "王宮への訪問者", description: "累計💖を500集める", title: "王宮初心者", current: function() { return totalAffinityEarned; }, target: 500 },
+    { id: "affinity1000", name: "少し近づいた距離", description: "累計💖を1,000集める", title: "王宮中級者", current: function() { return totalAffinityEarned; }, target: 1000 },
+    { id: "affinity5000", name: "待ち遠しい足音", description: "累計💖を5,000集める", title: "王宮上級者", current: function() { return totalAffinityEarned; }, target: 5000 },
+    { id: "affinity10000", name: "特別な時間", description: "累計💖を1万集める", title: "王宮公認", current: function() { return totalAffinityEarned; }, target: 10000 },
+    { id: "affinity50000", name: "待ち侘びる人", description: "累計💖を5万集める", title: "王宮顔パス", current: function() { return totalAffinityEarned; }, target: 50000 },
+    { id: "affinity100000", name: "帰る場所", description: "累計💖を10万集める", title: "毎日王宮", current: function() { return totalAffinityEarned; }, target: 100000 },
+    { id: "affinity300000", name: "王様のお気に入り", description: "累計💖を30万集める", title: "王宮永住", current: function() { return totalAffinityEarned; }, target: 300000 },
+    { id: "pets1", name: "王様をなでる者", description: "なでるを1回行う", title: "大胆な客人", current: function() { return totalPets; }, target: 1 },
+    { id: "pets10", name: "癒やし上手", description: "なでるを10回行う", title: "癒やし上手", current: function() { return totalPets; }, target: 10 },
+    { id: "pets50", name: "気を抜ける手", description: "なでるを50回行う", title: "安らぎを与える者", current: function() { return totalPets; }, target: 50 },
+    { id: "pets100", name: "専属の癒やし係", description: "なでるを100回行う", title: "王様の専属癒やし係", current: function() { return totalPets; }, target: 100 },
+    { id: "pets300", name: "帰る場所のぬくもり", description: "なでるを300回行う", title: "王の安らぎ", current: function() { return totalPets; }, target: 300 },
+    { id: "pets1000", name: "誰よりも優しい手", description: "なでるを1,000回行う", title: "愛しき手の主", current: function() { return totalPets; }, target: 1000 },
+    { id: "pets3000", name: "揺るがない安らぎ", description: "なでるを3,000回行う", title: "王の心をほどく者", current: function() { return totalPets; }, target: 3000 },
+    { id: "pets5000", name: "砂漠に咲くぬくもり", description: "なでるを5,000回行う", title: "王宮の癒やし手", current: function() { return totalPets; }, target: 5000 },
+    { id: "pets10000", name: "一万回のやさしい手", description: "なでるを10,000回行う", title: "王の帰る場所", current: function() { return totalPets; }, target: 10000 },
+    { id: "pokes1", name: "怖いもの知らず", description: "つつくを1回行う", title: "いたずらな客人", current: function() { return totalPokes; }, target: 1 },
+    { id: "pokes10", name: "王様の反応が見たい", description: "つつくを10回行う", title: "いたずら好き", current: function() { return totalPokes; }, target: 10 },
+    { id: "pokes50", name: "構ってほしいなら", description: "つつくを50回行う", title: "王様をつつく者", current: function() { return totalPokes; }, target: 50 },
+    { id: "pokes100", name: "逃げる準備はできたか？", description: "つつくを100回行う", title: "命知らずのいたずら者", current: function() { return totalPokes; }, target: 100 },
+    { id: "pokes300", name: "次は捕まえるぞ", description: "つつくを300回行う", title: "王様の遊び相手", current: function() { return totalPokes; }, target: 300 },
+    { id: "pokes1000", name: "逃がすと思ったか？", description: "つつくを1,000回行う", title: "王に捕まった者", current: function() { return totalPokes; }, target: 1000 },
+    { id: "pokes3000", name: "懲りないいたずら", description: "つつくを3,000回行う", title: "陛下を惑わす者", current: function() { return totalPokes; }, target: 3000 },
+    { id: "pokes5000", name: "王様を振り回す指先", description: "つつくを5,000回行う", title: "王宮のいたずら名人", current: function() { return totalPokes; }, target: 5000 },
+    { id: "pokes10000", name: "一万回の挑発", description: "つつくを10,000回行う", title: "王に捕まる運命", current: function() { return totalPokes; }, target: 10000 },
+    { id: "gifts1", name: "ひとやすみのお供", description: "差し入れを1回渡す", title: "気配りのできる客人", current: function() { return totalGifts; }, target: 1 },
+    { id: "gifts3", name: "小さな気遣い", description: "差し入れを3回渡す", title: "気配り上手", current: function() { return totalGifts; }, target: 3 },
+    { id: "gifts10", name: "王様の好み", description: "差し入れを10回渡す", title: "好みを知る者", current: function() { return totalGifts; }, target: 10 },
+    { id: "gifts30", name: "休憩の名人", description: "差し入れを30回渡す", title: "王様の好みを知る者", current: function() { return totalGifts; }, target: 30 },
+    { id: "gifts100", name: "お前が選ぶものなら", description: "差し入れを100回渡す", title: "王宮のもてなし係", current: function() { return totalGifts; }, target: 100 },
+    { id: "gifts300", name: "二人のひとやすみ", description: "差し入れを300回渡す", title: "王と茶を囲む者", current: function() { return totalGifts; }, target: 300 },
+    { id: "milkTea1", name: "甘いひとやすみ", description: "王宮はちみつミルクティーを1回渡す", title: "蜜茶を運ぶ者", current: function() { return totalMilkTea; }, target: 1 },
+    { id: "milkTea10", name: "ちょうどいい甘さ", description: "王宮はちみつミルクティーを10回渡す", title: "王宮のティー係", current: function() { return totalMilkTea; }, target: 10 },
+    { id: "milkTea50", name: "一息つく時間", description: "王宮はちみつミルクティーを50回渡す", title: "安らぎの一杯", current: function() { return totalMilkTea; }, target: 50 },
+    { id: "milkTea100", name: "お前も飲むか？", description: "王宮はちみつミルクティーを100回渡す", title: "王と茶を分かち合う者", current: function() { return totalMilkTea; }, target: 100 },
+
+    { id: "datesNuts1", name: "オアシスの恵み", description: "オアシスのデーツとナッツを1回渡す", title: "砂漠の恵みを運ぶ者", current: function() { return totalDatesNuts; }, target: 1 },
+    { id: "datesNuts10", name: "分かっているな", description: "オアシスのデーツとナッツを10回渡す", title: "王の軽食係", current: function() { return totalDatesNuts; }, target: 10 },
+    { id: "datesNuts50", name: "つい手が伸びる", description: "オアシスのデーツとナッツを50回渡す", title: "デーツを欠かさぬ者", current: function() { return totalDatesNuts; }, target: 50 },
+    { id: "datesNuts100", name: "遠慮はいらない", description: "オアシスのデーツとナッツを100回渡す", title: "オアシスの給仕係", current: function() { return totalDatesNuts; }, target: 100 },
+
+    { id: "jelly1", name: "星をすくう匙", description: "星彩の宝石ゼリーを1回渡す", title: "宝石菓子を運ぶ者", current: function() { return totalJewelJelly; }, target: 1 },
+    { id: "jelly10", name: "甘いご褒美", description: "星彩の宝石ゼリーを10回渡す", title: "宝石菓子の名人", current: function() { return totalJewelJelly; }, target: 10 },
+    { id: "jelly50", name: "食べるのが惜しいほど", description: "星彩の宝石ゼリーを50回渡す", title: "星菓子の収集家", current: function() { return totalJewelJelly; }, target: 50 },
+    { id: "jelly100", name: "次も期待していいか？", description: "星彩の宝石ゼリーを100回渡す", title: "王を喜ばせる者", current: function() { return totalJewelJelly; }, target: 100 },
+    { id: "items1", name: "私室の模様替え", description: "アイテムを1個購入する", title: "王宮の模様替え係", current: function() { return getPurchasedItemCount(); }, target: 1 },
+    { id: "items2", name: "壁を彩るもの", description: "アイテムを2個購入する", title: "私室を彩る者", current: function() { return getPurchasedItemCount(); }, target: 2 },
+    { id: "items3", name: "くつろぎの準備", description: "アイテムを3個購入する", title: "休息を整える者", current: function() { return getPurchasedItemCount(); }, target: 3 },
+    { id: "items4", name: "落ち着く香り", description: "アイテムを4個購入する", title: "王宮の香り係", current: function() { return getPurchasedItemCount(); }, target: 4 },
+    { id: "items5", name: "居心地のいい部屋", description: "アイテムを5個購入する", title: "私室を整える者", current: function() { return getPurchasedItemCount(); }, target: 5 },
+    { id: "items6", name: "二人で囲むテーブル", description: "アイテムを6個購入する", title: "王と茶を囲む者", current: function() { return getPurchasedItemCount(); }, target: 6 },
+    { id: "items7", name: "オアシスの彩り", description: "アイテムを7個購入する", title: "緑を運ぶ者", current: function() { return getPurchasedItemCount(); }, target: 7 },
+    { id: "items8", name: "青金のきらめき", description: "アイテムを8個購入する", title: "王宮の宝物係", current: function() { return getPurchasedItemCount(); }, target: 8 },
+    { id: "items9", name: "星灯りの夜", description: "アイテムを9個購入する", title: "夜を照らす者", current: function() { return getPurchasedItemCount(); }, target: 9 },
+    { id: "items10", name: "王様のひとやすみ", description: "アイテムを10個購入する", title: "王様の帰る部屋", current: function() { return getPurchasedItemCount(); }, target: 10 },
+    { id: "items11", name: "小さな王様", description: "アイテムを11個すべて購入する", title: "ぬいぐるみを飾る者", current: function() { return getPurchasedItemCount(); }, target: 11 },
+
+    { id: "salimGifts1", name: "王からの贈り物", description: "サリムから贈り物を1回受け取る", title: "王に選ばれた者", current: function() { return totalSalimGiftsReceived; }, target: 1 },
+    { id: "salimGifts3", name: "宝物が増える部屋", description: "サリムから贈り物を3回受け取る", title: "贈り物を待つ人", current: function() { return totalSalimGiftsReceived; }, target: 3 },
+    { id: "salimGiftCollectionAll", name: "サリムの宝物帳", description: "サリムからの贈り物をすべて集める", title: "王の宝物係", current: function() { return getReceivedSalimGiftCount(); }, target: SALIM_GIFTS.length },
+    { id: "salimBirthdayGift", name: "誕生日の贈り物", description: "サリムの誕生日に特別な贈り物を受け取る", title: "特別な日の贈り物", current: function() { return birthdaySalimGiftReceived ? 1 : 0; }, target: 1 },
+
+    { id: "userBirthdayGift", name: "星誓の誕生日祝い", description: "あなたの誕生日にサリムから贈り物を受け取る", title: "星誓の祝福を受けた者", current: function() { return userBirthdayGiftReceived ? 1 : 0; }, target: 1 },
+
+    { id: "loginTotal1", name: "気になる王様", description: "累計ログイン1日", title: "にわかファン", current: function() { return totalLoginDays; }, target: 1 },
+    { id: "loginTotal3", name: "ちょっと様子を見に来ただけ", description: "累計ログイン3日", title: "サリム初心者", current: function() { return totalLoginDays; }, target: 3 },
+    { id: "loginTotal7", name: "気づけば一週間", description: "累計ログイン7日", title: "サリム推し", current: function() { return totalLoginDays; }, target: 7 },
+    { id: "loginTotal30", name: "すっかり日課", description: "累計ログイン30日", title: "サリムファン", current: function() { return totalLoginDays; }, target: 30 },
+    { id: "loginTotal100", name: "抜け出せない沼", description: "累計ログイン100日", title: "サリムオタク", current: function() { return totalLoginDays; }, target: 100 },
+    { id: "loginStreak3", name: "三日連続サリム補給", description: "3日連続でログインする", title: "こまめに会いに来る人", current: function() { return longestLoginStreak; }, target: 3 },
+    { id: "loginStreak7", name: "一週間皆勤賞", description: "7日連続でログインする", title: "毎日サリム補給勢", current: function() { return longestLoginStreak; }, target: 7 },
+    { id: "loginStreak30", name: "三十日間、欠かさずに", description: "30日連続でログインする", title: "サリムガチ勢", current: function() { return longestLoginStreak; }, target: 30 },
+    { id: "salimBirthday", name: "サリム生誕祭", description: "7月30日にサリムのお部屋を訪れる", title: "王の誕生日を祝う者", current: function() { return birthdayVisited ? 1 : 0; }, target: 1 }
+  ];
+
+  const GIFTS = {
+    milkTea: {
+      name: "王宮はちみつミルクティー",
+      price: 100,
+      energyRecovery: 15,
+      moodRecovery: 2,
+      image: IMAGES.milkTea,
+      seconds: 4,
+      messages: [
+        "気が利くな。ちょうど一息つきたかったところだ",
+        "甘さがちょうどいい。一緒に飲むか？",
+        "ふう……。少し肩の力が抜けた"
+      ]
+    },
+    datesNuts: {
+      name: "オアシスのデーツとナッツ",
+      price: 300,
+      energyRecovery: 30,
+      moodRecovery: 5,
+      image: IMAGES.datesNuts,
+      seconds: 4,
+      messages: [
+        "おっ、これを選ぶとは分かってるな",
+        "デーツは疲れた時にちょうどいい。ありがとな",
+        "一緒に食べるか？遠慮する必要はないぞ"
+      ]
+    },
+    jewelJelly: {
+      name: "星彩の宝石ゼリー",
+      price: 800,
+      energyRecovery: 45,
+      moodRecovery: 10,
+      image: IMAGES.jewelJelly,
+      seconds: 6,
+      messages: [
+        "これは見事だな。食べるのが惜しいくらいだ",
+        "ははっ、俺を喜ばせるのが上手いな",
+        "気に入った。次も期待していいか？"
+      ]
+    }
+  };
+
+  const GIFT_MEMORY_MESSAGES = {
+    milkTea: [
+      "この前のミルクティー、悪くなかったな",
+      "少し休憩するか。お前も付き合え"
+    ],
+    datesNuts: [
+      "デーツがあると、つい手が伸びるな",
+      "お前は何が好きなんだ？次はお前の好みも教えてくれ"
+    ],
+    jewelJelly: [
+      "あのゼリー、また見つけたら持ってきてくれ",
+      "綺麗なだけじゃない。味もかなり良かった"
+    ]
+  };
+
+  const NOT_ENOUGH_AFFINITY_MESSAGES = [
+    "……残念だが、今は足りないみたいだな",
+    "無理をする必要はない。また今度にしよう"
+  ];
+
+  const STATUS_MESSAGES = {
+    early: {
+      normal: [
+        "来たか。待ってたぞ",
+        "どうした？俺の顔に何かついてるか？",
+        "少し休んでいけ。ここなら誰にも邪魔されない",
+        "お前も物好きだな。王の私室まで顔を出すとは",
+        "遠慮するな。客人をもてなすのも王の務めだ",
+        "外は暑かっただろう。少し涼んでいけ",
+        "よく来たな。迷惑なもんか、嬉しいぞ",
+        "王の私室に通うとは、お前もなかなか度胸があるな",
+        "外の市場は賑やかだったか？あとで話を聞かせてくれ",
+        "ここでは肩書きのことは忘れていい。俺も少し休みたい",
+        "お前は不思議だな。見ていると、つい構いたくなる",
+        "暇なら少し話していけ。退屈しのぎくらいにはなるだろう",
+        "お前の国の話も聞いてみたい。アシュルとは違う景色があるんだろ？",
+        "そう固くなるな。今はただの話し相手でいい",
+        "王様らしく見えるか？ははっ、そう見えてるなら成功だな",
+        "今日はいい風が吹いてる。窓辺で少し休んでいけ"
+      ],
+      happy: [
+        "今日は気分がいいんだ",
+        "お前がいると、退屈しないな",
+        "ちょうど話し相手が欲しかったところだ",
+        "せっかく来たんだ。もう少し付き合え",
+        "そんなに嬉しそうな顔をするな。俺まで笑っちまう",
+        "いい気分だ。お前も少し付き合っていけ",
+        "いいところに来たな。ちょうど退屈してたところだ",
+        "お前と話すのは悪くない。むしろ、少し楽しみにしてた",
+        "その顔を見ると、こっちまで気分が明るくなるな",
+        "今日は少し余裕がある。市場の話でも聞かせてくれ",
+        "よく来たな。歓迎するぞ",
+        "お前は本当に面白いな。見ていて飽きない",
+        "せっかくだ。今日は少し長めに話していけ"
+      ],
+      superhappy: [
+        "はははっ！悪くない一日だ！",
+        "こんなに笑ったのは久しぶりだな",
+        "お前もこっちへ来い。今日はゆっくりしていけ",
+        "いい気分だ。何か面白い話でもしてくれ",
+        "いい日に来たな。お前は運がいい",
+        "今日は気分がいい。特別に、少し多めに構ってやる",
+        "お前、面白いな。俺をここまで笑わせるとは",
+        "悪くない。いや、かなりいい気分だ",
+        "今日は何をしても上手くいきそうだ。お前が来たからかもな",
+        "そんな顔をするな。もっと構いたくなる",
+        "よし、今日は少しだけ王宮の面白い話をしてやる",
+        "お前といると、思った以上に退屈しないな"
+      ],
+      tired: [
+        "……少しだけ、休ませてくれ",
+        "さすがに今日は働きすぎたかもしれないな",
+        "お前の顔を見たら、気が抜けた",
+        "悪いな。少しぼんやりしていた"
+      ],
+      exhausted: [
+        "……悪い。今は少し、ぼんやりしていたい",
+        "王様にも、何も考えたくない時くらいある",
+        "今日は、もう十分働いた……はずだ",
+        "悪い、今は構ってやれないかもしれない"
+      ]
+    },
+    middle: {
+      normal: [
+        "また来たのか。いや、悪いとは言ってない。むしろ……",
+        "そんなに見られると、こっちも意識するんだが",
+        "お前が来ると、少し気が抜けるな",
+        "もう少しここにいろ。急いで帰る必要もないだろう",
+        "最近、お前が来るのを待つのが当たり前になってきたな",
+        "ここでは気を張らなくていい。お前も楽にしてろ",
+        "お前が来ると、部屋の空気が少し変わるな",
+        "最近は、お前の足音を覚えてしまった気がする",
+        "何も用がなくても来ていいぞ。その方が俺も退屈しない",
+        "お前と話していると、政務の疲れを忘れる",
+        "無理をして笑う必要はない。ここでは楽にしていろ",
+        "お前は俺を王として見ているのか、それとも……いや、今のは忘れろ",
+        "少し近くに来い。そんなに遠慮する距離でもないだろ？",
+        "茶でも淹れさせるか。お前と飲むなら悪くない",
+        "お前がいると、余計なことを考えずに済む",
+        "俺の話ばかりでは退屈だろう。今日はお前のことも聞かせろ"
+      ],
+      happy: [
+        "お前がいると、本当に退屈しないな",
+        "今日は機嫌がいい。お前のおかげかもしれないな",
+        "何だ、その顔は。俺に会えてそんなに嬉しいか？",
+        "ははっ、お前といると時間が過ぎるのが早い",
+        "せっかくだ。茶でも飲みながら話そう",
+        "お前が来ると、自然と笑ってしまうな",
+        "今日は機嫌がいい。理由を聞くか？……お前が来たからだ",
+        "ははっ、お前といると退屈する暇がない",
+        "こうして話す時間が、思ったより楽しみになってる",
+        "お前の声を聞くと、政務の疲れも少し軽くなる",
+        "今日はいい日だな。お前がいるなら、なおさらだ",
+        "そんなに見つめるな。俺まで嬉しくなるだろ",
+        "お前と茶を飲む時間は、なかなか贅沢だな",
+        "気分がいい。少しくらい、お前のわがままも聞いてやる",
+        "お前が笑っていると、この部屋まで明るくなる気がする"
+      ],
+      superhappy: [
+        "さあ、今日は何をして過ごす？俺を楽しませてくれるんだろ？",
+        "お前が来たなら、もう少し休憩を延ばしてもいいな",
+        "楽しいな。王様らしくない？ここでは構わないだろ？",
+        "いい顔をしてるな。俺まで嬉しくなる",
+        "ははっ、今日は最高に気分がいい。お前のおかげかもな",
+        "お前が来ると、どうにも調子が狂う。……いい意味でな",
+        "こんなに笑う王様は珍しいぞ。よく見ておけ",
+        "今日は特別だ。もう少し近くにいても許してやる",
+        "お前といると、面倒なことまで忘れられる",
+        "ははっ、いいな。こういう時間は嫌いじゃない",
+        "お前が楽しそうだと、俺まで嬉しくなる",
+        "今日は褒美をやりたい気分だ。何が欲しい？",
+        "俺をここまで機嫌よくさせるとは、お前も大したもんだ",
+        "こういう日は、少しだけ王様を休んでもいい気がする"
+      ],
+      tired: [
+        "……お前が来たなら、少し休んでも許されるか",
+        "こういう時にお前の顔を見ると、ほっとするな",
+        "すまない。少しだけ、このまま休ませてくれ",
+        "お前の前だと、つい気を抜いてしまう"
+      ],
+      exhausted: [
+        "……今日は、少しだけそばにいてくれ",
+        "お前に心配されると、無理をしていたと気づかされる",
+        "王としては情けないが……今は少し休みたい",
+        "悪い。言葉が出てこない。だが、来てくれて助かった"
+      ]
+    },
+    late: {
+      normal: [
+        "遅かったな。お前が来るまで、少し落ち着かなかった",
+        "……お前がいると落ち着く。もう少し、このままでいろ",
+        "この部屋での俺は、ただのサリムだ",
+        "お前の顔を見ると、安心する",
+        "今日は何をして過ごす？　お前となら、何でもいい",
+        "隣、空いてるぞ。そんなところに立ってないで来い",
+        "遅い。……待っていたと言ったら、笑うか？",
+        "お前の顔を見ると、ようやく落ち着ける気がする",
+        "ここにいる間だけは、俺を独り占めしていい",
+        "お前の前では、王らしくない顔ばかりしてしまうな",
+        "こっちへ来い。離れていると落ち着かない",
+        "お前がいない時間の方が、最近は長く感じる",
+        "無理に話さなくてもいい。隣にいるだけで十分だ",
+        "お前のために空けた時間だ。好きに使え",
+        "俺がこんなに誰かを待つようになるとはな",
+        "今日も来てくれてありがとう。……なんだ、たまには素直に言ってもいいだろ？"
+      ],
+      happy: [
+        "お前が来ると、自然と気分が明るくなるな",
+        "ははっ、やはりお前といる時間は悪くない",
+        "そんなに笑うな。……いや、そのままでいろ",
+        "お前がいるなら、今日はもう少し休んでもいいだろう",
+        "こっちへ来い。少しくらい近くにいても構わないだろ？",
+        "お前が来ただけで、こんなに気分が変わるとはな",
+        "今日は機嫌がいい。……お前に会えたから、ということにしておく",
+        "お前の前だと、つい顔が緩む。困ったもんだ",
+        "こっちへ来い。今日は特別に甘やかしてやる",
+        "お前が笑うと、それだけで気分がよくなる",
+        "待っていた時間まで、悪くなかったと思えるな",
+        "お前がいると、何でもない日まで特別になる",
+        "そんな顔をされたら、離したくなくなるだろ？",
+        "今日はずっとここにいろ。……俺の機嫌がいい間だけでいい",
+        "お前といると、王であることを忘れそうになるな"
+      ],
+      superhappy: [
+        "はははっ！お前がいると、本当に飽きないな！",
+        "今日はいい日だ。お前もいるしな",
+        "もっとこっちへ来い。せっかく二人きりなんだ",
+        "こんなに笑えるのは、お前の前くらいだ",
+        "ははっ、来たな。今日はお前を離せる気がしない",
+        "お前に会えたから、今日はもう十分いい日だ",
+        "こんな顔、他の誰にも見せられないな",
+        "今日は特別に甘やかしてやる。覚悟しておけ",
+        "お前がいると、胸の奥まで軽くなる",
+        "俺をこんなに浮かれさせるのは、お前くらいだ",
+        "こっちへ来い。今日は遠慮なんて許さない",
+        "お前が笑ってくれるなら、俺は何でも頑張れる",
+        "王としての俺も、ただのサリムとしての俺も、好きでいてくれるか？",
+        "今日はずっと傍にいろ。命令じゃない、俺の願いだ"
+      ],
+      tired: [
+        "……お前の顔を見たら、安心して力が抜けた",
+        "少しだけ、そばにいてくれ。それで十分だ",
+        "お前に心配をかけたくはないんだが……今日は疲れた",
+        "悪いな。少しだけ、お前に甘えさせてくれ"
+      ],
+      exhausted: [
+        "……今は、お前がここにいてくれるだけでいい",
+        "王ではなく、ただのサリムとして休ませてくれ",
+        "お前の前だと、弱いところまで隠せなくなるな",
+        "少しだけ、このまま何も言わずにいてくれ"
+      ]
+    }
+  };
+
+  const RARE_HONEST_MESSAGES = {
+    middle: [
+      "お前と過ごすこの時間が、好きだ",
+      "お前の前では、少しくらい気を抜いてもいいと思える",
+      "ここにいる時だけは、肩書きを忘れられる気がする"
+    ],
+    late: [
+      "王になってから、誰かを待つことなんてなかった。……お前以外はな",
+      "この部屋での俺は、ただのサリムだ",
+      "お前がいるから、俺は王でいられる",
+      "誰にも見せない顔を、お前には見られてもいいと思ってる"
+    ]
+  };
+
+  const PET_MESSAGES = {
+    early: [
+      "……俺を子供扱いか？",
+      "随分と大胆だな。王の頭を撫でるとは",
+      "まあ、悪くはない。少しだけなら許す",
+      "俺の頭を撫でるなんて、本当に怖いもの知らずだな？",
+      "こら。誰にでもするんじゃないぞ",
+      "お前は不思議なことをするな。……ん？嫌じゃないぞ",
+      "手つきが妙に優しいな。少し調子が狂う",
+      "俺を甘やかしてどうするつもりだ？",
+      "少しだけだぞ。あまり撫でられると、俺の威厳がなくなる"
+    ],
+    middle: [
+      "悪くない。もう少し続けてもいいぞ",
+      "お前にされると、不思議と気が抜けるな",
+      "……慣れてきた自分が少し悔しいな",
+      "……お前の手は、妙に落ち着くな",
+      "慣れてきた自分が少し悔しい",
+      "そんな顔で撫でるな。こっちまで気が抜ける",
+      "もう少しだけなら、許してやる",
+      "お前に撫でられると、眠くなってくる",
+      "まったく……俺を安心させるのが上手いな",
+      "王を撫でて満足か？なら、もう少しだけ付き合ってやる",
+      "……悪くない。むしろ、少し困るくらいだ"
+    ],
+    late: [
+      "お前にされると、妙に落ち着くな",
+      "もう少し、そのままでいろ",
+      "お前の手は、悪くない。むしろ好きだ",
+      "もっと近くで撫でろ。遠慮はいらない",
+      "お前の手なら、いくらでも許すぞ",
+      "……そのまま。もう少しだけ、そうしていてくれ",
+      "お前に甘やかされるのは、嫌いじゃない",
+      "こうされると、何も考えたくなくなるな",
+      "お前の前だと、どうにも弱くなる",
+      "俺をこんな顔にさせるのは、お前くらいだ",
+      "今日は少し疲れた。……だから、もう少し撫でてくれ"
+    ]
+  };
+
+  const POKE_MESSAGES = {
+    early: [
+      "……何してる？",
+      "俺が王だということ、忘れてないか？",
+      "構ってほしいなら、素直に言え",
+      "……今、俺をつついたな？",
+      "おい、くすぐったいぞ",
+      "そんなに構ってほしいのか？",
+      "つついて反応を見るとは、悪い趣味だな？",
+      "こら。俺は置物じゃないぞ",
+      "次にやったら、ただでは済まないかもな？"
+    ],
+    middle: [
+      "またか。お前は本当に飽きないな",
+      "構ってほしいなら、素直に言えばいいだろ？",
+      "次にやったら、こっちから捕まえるぞ",
+      "またつついたな。お前は本当に懲りない",
+      "そんなに俺の反応が見たいのか？",
+      "逃げる準備はできているんだろうな",
+      "まったく……構われるのが少し嬉しいのが悔しい",
+      "今のは見逃してやる。次は捕まえる",
+      "お前がそうやって構ってくるのも、もう慣れてきたな",
+      "退屈してるなら、俺が相手をしてやる",
+      "つつくより、素直に呼べ。その方が早い"
+    ],
+    late: [
+      "お前、随分と余裕だな。捕まえても文句は言うなよ？",
+      "またつついたな。……そんなに俺に構ってほしいのか？",
+      "次は逃がさないぞ。覚悟しておけ",
+      "お前、わざとだな？……いい度胸だ",
+      "次は俺の番だ。逃げられると思うなよ？",
+      "そんなに構ってほしいなら、最初からそう言え",
+      "お前に触れられるのは嫌じゃない。だが、つつくな",
+      "悪戯が過ぎるな。少し仕返ししてもいいか？",
+      "捕まえたら、しばらく離さないぞ",
+      "お前は本当に、俺の気を引くのが上手い",
+      "……そんな顔をされたら、怒るに怒れないだろ"
+    ]
+  };
+
+  const LOGIN_BONUS_REWARDS = [100, 150, 200, 300, 400, 500, 1000];
+
+  const LOGIN_MESSAGES = {
+    early: [
+      "今日も来たか。ゆっくりしていけ",
+      "顔を見せに来たのか？歓迎するぞ",
+      "ちょうど一息つこうと思っていたところだ"
+    ],
+    middle: [
+      "今日も来たな。……少し待った",
+      "お前の顔を見ると、気が抜けるな",
+      "続けて会いに来るとは、嬉しいことをしてくれる"
+    ],
+    late: [
+      "今日も来たか。お前の顔を見ないと、どうにも落ち着かなくてな",
+      "待っていた。……もう少し近くに来い",
+      "お前が来る時間が、俺の楽しみになってる"
+    ]
+  };
+
+  const TIME_MESSAGES = {
+    morning: [
+      "早いな。ちゃんと眠れたか？",
+      "朝の空気は悪くない。お前も少しゆっくりしていけ",
+      "おはよう。朝からお前の顔を見られるとは。今日は良い日になりそうだ"
+    ],
+    day: [
+      "外は暑かっただろう。ここで少し涼んでいけ",
+      "昼間から俺の部屋へ来るとは、随分と大胆だな？",
+      "政務の合間だ。少しくらい、お前と話す時間があってもいいだろう"
+    ],
+    night: [
+      "夜は静かでいい。お前と話すにはちょうどいいな",
+      "もうこんな時間か。少しくらい、ゆっくりしていけ",
+      "砂漠の夜は冷える。あまり遅くならないうちに休めよ"
+    ],
+    lateNight: [
+      "まだ起きてたのか？無理はするなよ",
+      "こんな時間まで起きてるとはな。眠れないのか？",
+      "夜更かしは感心しないな。……少し話したら、ちゃんと休め"
+    ]
+  };
+
+  const ITEM_MEMORY_MESSAGES = {
+    kingdomMap: ["この地図を見ると、次に案内したい場所が増えるな", "ラズレムの話をするか？お前には知ってほしい"],
+    starMoonTapestry: ["あのタペストリー、なかなかいいだろ？", "星を眺めるなら、砂漠の夜が一番だ"],
+    relaxCushions: ["あのクッション、思った以上に気に入ってる", "休むなら、お前も遠慮せず使え"],
+    goldIncenseBurner: ["香炉の香りが落ち着くな。お前も気に入ったか？"],
+    letterPile: ["書簡は減らしているはずなのに、なぜか増えるんだ", "少しだけ政務を片づける。終わったら付き合ってくれ"],
+    royalTeaTime: ["茶を淹れるか。今日はお前も付き合え", "二人分の椅子があるんだ。遠慮する必要はないだろう？"],
+    razremPlanter: ["緑があると部屋の空気が柔らかくなるな", "庭園の花も見頃だ。今度、一緒に歩くか？"],
+    salimPlush: ["ぬいぐるみもいいが、俺にも構ってくれよ？", "お前がそれを気に入っているなら、まあ……悪くない"],
+    blueGoldJewelBox: ["宝石箱には、まだ何を入れるか決めていない", "大事なものは、目に見える物ばかりじゃないがな"],
+    starlightLantern: ["あの灯りは、夜にちょうどいい", "ランタンの下で話すと、時間を忘れそうになるな"],
+    starSandCelestialGlobe: ["天球儀を眺めていると、砂漠の夜空を思い出す", "星を見に行くか？　お前となら、悪くない"]
+  };
+
+  const RANDOM_EVENTS = [
+    { line: "市場の音楽が聞こえるな。ああいう賑やかさは嫌いじゃない", affinityGain: 15, moodGain: 5 },
+    { line: "やっと書簡が片づいた。少しくらい休んでも罰は当たらないだろう", affinityGain: 20, energyGain: 5 },
+    { line: "いい風だな。砂漠の夜は、こうして眺めていると悪くない", affinityGain: 15, moodGain: 5 },
+    { line: "庭園の花が見頃らしい。今度、お前も一緒に来るか？", affinityGain: 10, moodGain: 8 },
+    { line: "いつからそこにいた？……いや、来てくれて嬉しい", affinityGain: 20, moodGain: 4 }
+  ];
+
+  const ROOM_VISITOR_EVENTS = [
+    {
+      character: "farid",
+      toast: "📚 ファリドが部屋を訪れました",
+      line: "ファリドが書簡を抱えて、静かに一礼した。\n「陛下、確認していただきたい書簡がございます」\n「ファリド、少しは息抜きしろ。お前まで倒れたら俺が困る」\n「……陛下がそれをおっしゃいますか」",
+      affinityGain: 25,
+      moodGain: 3
+    },
+    {
+      character: "farid",
+      toast: "📚 ファリドが部屋を訪れました",
+      line: "ファリドは部屋の様子を見て、小さく息をついた。\n「陛下。また休憩時間が長引いているのでは」\n「固いことを言うな。こいつが来てるんだ、少しくらいいいだろ」\n「……ほどほどになさってください」",
+      affinityGain: 20,
+      moodGain: 4
+    },
+    {
+      character: "farid",
+      toast: "📚 ファリドが部屋を訪れました",
+      line: "ファリドがあなたに丁寧に会釈した。\n「陛下がご迷惑をおかけしていませんか」\n「おい、迷惑前提で話すな」\n「日頃の行いでございます、陛下」",
+      affinityGain: 20,
+      moodGain: 5
+    },
+    {
+      character: "sara",
+      toast: "🌸 サラが部屋を訪れました",
+      line: "サラがお茶を運び、柔らかく微笑んだ。\n「陛下、あなた様とご一緒でしたか。楽しそうで何よりです」\n「サラ、いつもありがとな。こいつが緊張しないよう、色々気を配ってくれているだろ」\n「いえ。お二人が穏やかに過ごされるなら、それが一番です」",
+      affinityGain: 25,
+      moodGain: 6
+    },
+    {
+      character: "sara",
+      toast: "🌸 サラが部屋を訪れました",
+      line: "サラがそっと菓子皿を置いた。\n「少し甘いものをお持ちしました。どうぞ、ごゆっくり」\n「助かる。サラは本当に気が利くな」\n「陛下が少し自由すぎるだけでございます」",
+      affinityGain: 20,
+      moodGain: 6
+    },
+    {
+      character: "sara",
+      toast: "🌸 サラが部屋を訪れました",
+      line: "サラはサリムとあなたを見て、穏やかに目を細めた。\n「仲が良くて何よりです」\n「ははっ、そう見えるか？」\n「はい。陛下のお顔が、いつもより柔らかく見えます」",
+      affinityGain: 25,
+      moodGain: 7
+    }
+  ];
+
+  const CHOICE_EVENTS = [
+    {
+      prompt: "政務を終えたサリムが、少し疲れた様子で肩を回している。どうする？",
+      options: [
+        { label: "少し休むよう勧める", line: "そうだな。お前がそう言うなら、少し休ませてもらう", multiplier: 2, seconds: 120 },
+        { label: "隣で話し相手になる", line: "ははっ、それは助かる。お前と話していると、疲れも忘れるな", multiplier: 3, seconds: 60 }
+      ]
+    },
+    {
+      prompt: "サリムが窓辺で砂漠の夜景を眺めている。どう声をかける？",
+      options: [
+        { label: "隣で一緒に眺める", line: "静かでいいな。……お前が隣にいるなら、なおさらだ", multiplier: 2, seconds: 120 },
+        { label: "夜風に当たりに行こうと誘う", line: "いいな。お前となら、少しくらい抜け出しても許されるだろう", multiplier: 3, seconds: 60 }
+      ]
+    },
+    {
+      prompt: "テーブルの上には二人分の茶器が用意されている。サリムがこちらを見て笑った。",
+      options: [
+        { label: "一緒にお茶を飲む", line: "最初からそのつもりだ。ほら、こっちに座れ", multiplier: 2, seconds: 120 },
+        { label: "自分が茶を淹れる", line: "お前が淹れてくれるのか？それなら、楽しみに待つとしよう", multiplier: 3, seconds: 60 }
+      ]
+    }
+  ];
+
+  const BIRTHDAY_MESSAGES = [
+    "覚えていてくれたのか。……嬉しい。今日は少し、俺に付き合ってくれ",
+    "俺の誕生日を祝ってくれるとはな。礼を言う",
+    "今日は王ではなく、ただのサリムとして過ごしたい。……お前と一緒にな"
+  ];
+
+  let affinity = loadNumber("affinity", 0);
+  let energy = loadNumber("energy", 50);
+  let mood = loadNumber("mood", 50);
+  let totalAffinityEarned = loadNumber("totalAffinityEarned", affinity);
+  let totalPets = loadNumber("totalPets", 0);
+  let totalPokes = loadNumber("totalPokes", 0);
+  let totalGifts = loadNumber("totalGifts", 0);
+  let totalMilkTea = loadNumber("totalMilkTea", 0);
+  let totalDatesNuts = loadNumber("totalDatesNuts", 0);
+  let totalJewelJelly = loadNumber("totalJewelJelly", 0);
+  let receivedSalimGifts = loadJSON("receivedSalimGifts", {});
+  let ownedOutingSouvenirs = loadJSON("outingSouvenirs", {});
+  let unlockedAlbumCards = loadJSON("unlockedAlbumCards", {});
+  let albumCardUnlockedDates = loadJSON("albumCardUnlockedDates", {});
+  let totalSalimGiftsReceived = loadNumber("totalSalimGiftsReceived", 0);
+  let birthdaySalimGiftReceived = loadBoolean("birthdaySalimGiftReceived", false);
+  let lastSalimGiftBirthdayYear = loadNumber("lastSalimGiftBirthdayYear", 0);
+  let userBirthdayMonth = loadNumber("userBirthdayMonth", 0);
+  let userBirthdayDay = loadNumber("userBirthdayDay", 0);
+  let lastUserBirthdayGiftYear = loadNumber("lastUserBirthdayGiftYear", 0);
+  let userBirthdayGiftReceived = loadBoolean("userBirthdayGiftReceived", false);
+  let purchasedItems = loadJSON("purchasedItems", {});
+  let itemLayouts = loadJSON("itemLayouts", {});
+  let placedRoomItems = loadJSON("placedRoomItems", {});
+  let activePlacementItemId = "";
+  let placementStartLayout = null;
+  let unlockedAchievements = loadJSON("unlockedAchievements", {});
+  let selectedTitle = loadText("selectedTitle", "なし");
+  let manualTitleSelection = loadBoolean("manualTitleSelection", false);
+  let lastLoginDate = loadText("lastLoginDate", "");
+  let consecutiveLoginDays = loadNumber("consecutiveLoginDays", 0);
+  let totalLoginDays = loadNumber("totalLoginDays", 0);
+  let longestLoginStreak = loadNumber("longestLoginStreak", 0);
+  let birthdayVisited = loadBoolean("birthdayVisited", false);
+  let lastBirthdayEventYear = loadNumber("lastBirthdayEventYear", 0);
+  let affinityMultiplier = loadNumber("affinityMultiplier", 1);
+  let affinityBoostUntil = loadNumber("affinityBoostUntil", 0);
+  let achievementToastTimer = 0;
+  let achievementsDirty = true;
+  let energyTimer = 0;
+  let moodTimer = 0;
+  let temporaryImageTimer = 0;
+  let blinkTimer = 0;
+  let blinkTimeoutId = null;
+  let isBlinking = false;
+  let messageLockTimer = 0;
+  let statusMessageTimer = 0;
+  let currentStatusKey = "";
+  let randomEventTimer = 0;
+  let choiceEventTimer = 0;
+  let roomVisitorEventTimer = 0;
+  let roomVisitorTimer = 0;
+  let activeChoiceEvent = null;
+  let pendingSalimGiftEvents = [];
+  const STATUS_MESSAGE_SECONDS = 10;
+  const LEVEL_GROWTH_BASE = 1000;
+
+  const affinityText = document.getElementById("affinity");
+  const energyText = document.getElementById("energyText");
+  const moodText = document.getElementById("moodText");
+  const energyBar = document.getElementById("energyBar");
+  const moodBar = document.getElementById("moodBar");
+  const message = document.getElementById("message");
+  const salimImage = document.getElementById("salimImage");
+  const roomVisitor = document.getElementById("roomVisitor");
+  const levelBox = document.getElementById("levelBox");
+  const roomItems = document.getElementById("roomItems");
+  const itemGrid = document.getElementById("itemGrid");
+  const placementGrid = document.getElementById("placementGrid");
+  const placementEmpty = document.getElementById("placementEmpty");
+  const placementPanel = document.getElementById("placementPanel");
+  const placementPanelTitle = document.getElementById("placementPanelTitle");
+  const achievementGrid = document.getElementById("achievementGrid");
+  const achievementSummary = document.getElementById("achievementSummary");
+  const achievementToast = document.getElementById("achievementToast");
+  const selectedTitleName = document.getElementById("selectedTitleName");
+  const itemMenuCount = document.getElementById("itemMenuCount");
+  const achievementMenuCount = document.getElementById("achievementMenuCount");
+  const boostBox = document.getElementById("boostBox");
+  const loginStats = document.getElementById("loginStats");
+  const loginBonusTitle = document.getElementById("loginBonusTitle");
+  const loginBonusLine = document.getElementById("loginBonusLine");
+  const loginBonusReward = document.getElementById("loginBonusReward");
+  const loginBonusStats = document.getElementById("loginBonusStats");
+  const userBirthdayStatus = document.getElementById("userBirthdayStatus");
+  const userBirthdayForm = document.getElementById("userBirthdayForm");
+  const userBirthdayMonthSelect = document.getElementById("userBirthdayMonth");
+  const userBirthdayDaySelect = document.getElementById("userBirthdayDay");
+  const userBirthdayNote = document.getElementById("userBirthdayNote");
+  const choiceEventPrompt = document.getElementById("choiceEventPrompt");
+  const choiceEventButtons = document.getElementById("choiceEventButtons");
+  const collectionGrid = document.getElementById("collectionGrid");
+  const collectionSummary = document.getElementById("collectionSummary");
+  const collectionMenuCount = document.getElementById("collectionMenuCount");
+  const souvenirSummary = document.getElementById("souvenirSummary");
+  const souvenirGrid = document.getElementById("souvenirGrid");
+  const albumMenuCount = document.getElementById("albumMenuCount");
+  const albumSummary = document.getElementById("albumSummary");
+  const albumGrid = document.getElementById("albumGrid");
+  const albumViewerTitle = document.getElementById("albumViewerTitle");
+  const albumViewerImage = document.getElementById("albumViewerImage");
+  const salimGiftEventLine = document.getElementById("salimGiftEventLine");
+  const salimGiftEventReward = document.getElementById("salimGiftEventReward");
+  const salimGiftEventDetail = document.getElementById("salimGiftEventDetail");
+  const salimGiftEventImage = document.getElementById("salimGiftEventImage");
+
+  function storageKey(name) {
+    return STORAGE_PREFIX + name;
+  }
+
+  function loadNumber(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    if (saved === null) return fallback;
+
+    const value = Number(saved);
+    return Number.isFinite(value) ? value : fallback;
+  }
+
+  function loadJSON(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    if (saved === null) return fallback;
+
+    try {
+      const value = JSON.parse(saved);
+      return value && typeof value === "object" ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function loadText(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    return saved === null ? fallback : saved;
+  }
+
+  function loadBoolean(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    if (saved === null) return fallback;
+    return saved === "true";
+  }
+
+  function saveGame() {
+    localStorage.setItem(storageKey("affinity"), affinity);
+    localStorage.setItem(storageKey("energy"), energy);
+    localStorage.setItem(storageKey("mood"), mood);
+    localStorage.setItem(storageKey("totalAffinityEarned"), totalAffinityEarned);
+    localStorage.setItem(storageKey("totalPets"), totalPets);
+    localStorage.setItem(storageKey("totalPokes"), totalPokes);
+    localStorage.setItem(storageKey("totalGifts"), totalGifts);
+    localStorage.setItem(storageKey("totalMilkTea"), totalMilkTea);
+    localStorage.setItem(storageKey("totalDatesNuts"), totalDatesNuts);
+    localStorage.setItem(storageKey("totalJewelJelly"), totalJewelJelly);
+    localStorage.setItem(storageKey("receivedSalimGifts"), JSON.stringify(receivedSalimGifts));
+    localStorage.setItem(storageKey("unlockedAlbumCards"), JSON.stringify(unlockedAlbumCards));
+    localStorage.setItem(storageKey("albumCardUnlockedDates"), JSON.stringify(albumCardUnlockedDates));
+    localStorage.setItem(storageKey("totalSalimGiftsReceived"), totalSalimGiftsReceived);
+    localStorage.setItem(storageKey("birthdaySalimGiftReceived"), String(birthdaySalimGiftReceived));
+    localStorage.setItem(storageKey("lastSalimGiftBirthdayYear"), lastSalimGiftBirthdayYear);
+    localStorage.setItem(storageKey("userBirthdayMonth"), userBirthdayMonth);
+    localStorage.setItem(storageKey("userBirthdayDay"), userBirthdayDay);
+    localStorage.setItem(storageKey("lastUserBirthdayGiftYear"), lastUserBirthdayGiftYear);
+    localStorage.setItem(storageKey("userBirthdayGiftReceived"), String(userBirthdayGiftReceived));
+    localStorage.setItem(storageKey("purchasedItems"), JSON.stringify(purchasedItems));
+    localStorage.setItem(storageKey("itemLayouts"), JSON.stringify(itemLayouts));
+    localStorage.setItem(storageKey("placedRoomItems"), JSON.stringify(placedRoomItems));
+    localStorage.setItem(storageKey("unlockedAchievements"), JSON.stringify(unlockedAchievements));
+    localStorage.setItem(storageKey("selectedTitle"), selectedTitle);
+    localStorage.setItem(storageKey("manualTitleSelection"), String(manualTitleSelection));
+    localStorage.setItem(storageKey("lastLoginDate"), lastLoginDate);
+    localStorage.setItem(storageKey("consecutiveLoginDays"), consecutiveLoginDays);
+    localStorage.setItem(storageKey("totalLoginDays"), totalLoginDays);
+    localStorage.setItem(storageKey("longestLoginStreak"), longestLoginStreak);
+    localStorage.setItem(storageKey("birthdayVisited"), String(birthdayVisited));
+    localStorage.setItem(storageKey("lastBirthdayEventYear"), lastBirthdayEventYear);
+    localStorage.setItem(storageKey("affinityMultiplier"), affinityMultiplier);
+    localStorage.setItem(storageKey("affinityBoostUntil"), affinityBoostUntil);
+    localStorage.setItem(storageKey("lastSave"), Date.now());
+  }
+
+  function applyOfflineProgress() {
+    const lastSave = Number(localStorage.getItem(storageKey("lastSave"))) || Date.now();
+    const offlineSeconds = Math.max(0, Math.floor((Date.now() - lastSave) / 1000));
+
+    if (offlineSeconds <= 0) return;
+
+    addAffinity(offlineSeconds);
+    energy = Math.max(0, energy - Math.floor(offlineSeconds / 120));
+    mood = Math.max(0, mood - Math.floor(offlineSeconds / 120));
+  }
+
+  function getActiveAffinityMultiplier() {
+    if (Date.now() >= affinityBoostUntil) {
+      affinityMultiplier = 1;
+      affinityBoostUntil = 0;
+    }
+    return Math.max(1, affinityMultiplier || 1);
+  }
+
+  function addAffinity(amount, applyBoost) {
+    const gain = Math.floor(amount * (applyBoost ? getActiveAffinityMultiplier() : 1));
+    affinity += gain;
+    totalAffinityEarned += gain;
+    return gain;
+  }
+
+  function getLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return year + "-" + month + "-" + day;
+  }
+
+  function getYesterdayString() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return getLocalDateString(yesterday);
+  }
+
+  function getDayNumber(dateString) {
+    if (!dateString) return 0;
+    const date = new Date(dateString + "T00:00:00");
+    return Math.floor(date.getTime() / 86400000);
+  }
+
+  function getSalimGiftById(giftId) {
+    return SALIM_GIFTS.find(function(gift) { return gift.id === giftId; }) || null;
+  }
+
+  function hasUserBirthday() {
+    return isValidMonthDay(userBirthdayMonth, userBirthdayDay);
+  }
+
+  function isValidMonthDay(month, day) {
+    month = Number(month);
+    day = Number(day);
+    if (!Number.isInteger(month) || !Number.isInteger(day)) return false;
+    if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+    const check = new Date(2024, month - 1, day);
+    return check.getMonth() === month - 1 && check.getDate() === day;
+  }
+
+  function isUserBirthday() {
+    if (!hasUserBirthday()) return false;
+    const now = new Date();
+    return now.getMonth() + 1 === userBirthdayMonth && now.getDate() === userBirthdayDay;
+  }
+
+  function populateUserBirthdaySelects() {
+    if (!userBirthdayMonthSelect || !userBirthdayDaySelect) return;
+    if (userBirthdayMonthSelect.options.length <= 0) {
+      for (let month = 1; month <= 12; month++) {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = month + "月";
+        userBirthdayMonthSelect.appendChild(option);
+      }
+    }
+
+    if (userBirthdayDaySelect.options.length <= 0) {
+      for (let day = 1; day <= 31; day++) {
+        const option = document.createElement("option");
+        option.value = day;
+        option.textContent = day + "日";
+        userBirthdayDaySelect.appendChild(option);
+      }
+    }
+  }
+
+  function renderUserBirthdaySettings() {
+    populateUserBirthdaySelects();
+    if (!userBirthdayStatus || !userBirthdayForm || !userBirthdayNote) return;
+
+    if (hasUserBirthday()) {
+      userBirthdayStatus.textContent = "あなたの誕生日：" + userBirthdayMonth + "月" + userBirthdayDay + "日";
+      userBirthdayForm.style.display = "none";
+      userBirthdayNote.textContent = "誕生日は登録済みです。変更はできません。";
+      return;
+    }
+
+    userBirthdayStatus.textContent = "あなたの誕生日：未設定";
+    userBirthdayForm.style.display = "flex";
+    userBirthdayNote.textContent = "※一度登録した誕生日は変更できません。";
+  }
+
+  function setUserBirthday() {
+    if (hasUserBirthday()) {
+      setMessage("誕生日はもう登録済みだ。大事な日だからな、簡単には変えられないぞ", 5);
+      closeMenu("settingsMenu");
+      scrollToSalimReaction();
+      return;
+    }
+
+    const month = Number(userBirthdayMonthSelect ? userBirthdayMonthSelect.value : 0);
+    const day = Number(userBirthdayDaySelect ? userBirthdayDaySelect.value : 0);
+
+    if (!isValidMonthDay(month, day)) {
+      window.alert("存在する日付を選んでください。");
+      return;
+    }
+
+    const ok = window.confirm(month + "月" + day + "日をあなたの誕生日として登録します。\n一度登録すると変更できません。");
+    if (!ok) return;
+
+    userBirthdayMonth = month;
+    userBirthdayDay = day;
+    renderUserBirthdaySettings();
+    saveGame();
+
+    setMessage("覚えたぞ。お前の誕生日は、俺にとっても特別な日だ", 6);
+    closeMenu("settingsMenu");
+    scrollToSalimReaction();
+
+    queueSalimGiftEvent(createEligibleSalimGiftEvents());
+    window.setTimeout(showPendingSalimGiftEvent, 500);
+    updateScreen();
+  }
+
+  function getReceivedSalimGiftCount() {
+    return SALIM_GIFTS.filter(function(gift) { return Boolean(receivedSalimGifts[gift.id]); }).length;
+  }
+
+  function getSalimGiftComment(gift) {
+    if (!gift) return "";
+    if (gift.id === "salimLetter") {
+      return "俺の誕生日を一緒に過ごしてくれてありがとう。来年も祝ってくれるか？";
+    }
+    return gift.comment;
+  }
+
+  function isSalimGiftConditionMet(gift) {
+    if (!gift) return false;
+    if (gift.conditionType === "level") return getLevel() >= gift.conditionValue;
+    if (gift.conditionType === "login") return totalLoginDays >= gift.conditionValue;
+    if (gift.conditionType === "birthday") return isSalimBirthday();
+    if (gift.conditionType === "userBirthday") return isUserBirthday();
+    return false;
+  }
+
+  function createEligibleSalimGiftEvents() {
+    const events = [];
+    SALIM_GIFTS.forEach(function(gift) {
+      if (receivedSalimGifts[gift.id] && gift.conditionType !== "userBirthday") return;
+      if (!isSalimGiftConditionMet(gift)) return;
+
+      if (gift.conditionType === "birthday") {
+        const year = new Date().getFullYear();
+        if (lastSalimGiftBirthdayYear === year) return;
+        lastSalimGiftBirthdayYear = year;
+        birthdaySalimGiftReceived = true;
+      }
+
+      if (gift.conditionType === "userBirthday") {
+        const year = new Date().getFullYear();
+        if (lastUserBirthdayGiftYear === year) return;
+        lastUserBirthdayGiftYear = year;
+        userBirthdayGiftReceived = true;
+      }
+
+      events.push({ giftId: gift.id, reason: gift.conditionType });
+    });
+    return events;
+  }
+
+  function queueSalimGiftEvent(eventData) {
+    if (!eventData) return;
+    if (Array.isArray(eventData)) {
+      eventData.forEach(function(entry) { queueSalimGiftEvent(entry); });
+      return;
+    }
+    const alreadyQueued = pendingSalimGiftEvents.some(function(entry) {
+      return entry.giftId === eventData.giftId;
+    });
+    if (!alreadyQueued) pendingSalimGiftEvents.push(eventData);
+  }
+
+  function receiveSalimGift(eventData) {
+    const gift = getSalimGiftById(eventData.giftId);
+    if (!gift) return null;
+
+    const today = getLocalDateString(new Date());
+    const previous = receivedSalimGifts[gift.id];
+
+    if (previous) {
+      previous.count = (Number(previous.count) || 1) + 1;
+      previous.latestDate = today;
+    } else {
+      receivedSalimGifts[gift.id] = {
+        date: today,
+        latestDate: today,
+        count: 1
+      };
+    }
+
+    totalSalimGiftsReceived += 1;
+
+    addAffinity(gift.reward, false);
+    achievementsDirty = true;
+    renderCollection(true);
+    renderOutingSouvenirs();
+    updateCollectionMenuCount();
+    saveGame();
+
+    return gift;
+  }
+
+  function getSalimGiftReasonLabel(reason) {
+    if (reason === "birthday") return "誕生日の特別な贈り物";
+    if (reason === "userBirthday") return "あなたの誕生日の贈り物";
+    if (reason === "login") return "会いに来てくれたお礼";
+    if (reason === "level") return "仲が深まった記念";
+    return "サリムからの贈り物";
+  }
+
+  function showPendingSalimGiftEvent() {
+    if (pendingSalimGiftEvents.length <= 0) return;
+    if (document.querySelector(".menu-overlay.open")) return;
+
+    const eventData = pendingSalimGiftEvents.shift();
+    const gift = receiveSalimGift(eventData);
+    if (!gift) return;
+
+    const giftComment = getSalimGiftComment(gift);
+
+    if (salimGiftEventImage) salimGiftEventImage.src = IMAGES.gift;
+    if (salimGiftEventLine) salimGiftEventLine.textContent = "「" + giftComment + "」";
+    if (salimGiftEventReward) salimGiftEventReward.textContent = getSalimGiftReasonLabel(eventData.reason) + "｜💖 +" + formatNumber(gift.reward);
+    if (salimGiftEventDetail) salimGiftEventDetail.textContent = "受け取ったもの：" + gift.name;
+
+    showTemporaryImage(IMAGES.gift, 7);
+    setMessage(giftComment, 7);
+    openMenu("salimGiftEventMenu");
+    updateScreen();
+  }
+
+  function updateCollectionMenuCount() {
+    if (!collectionMenuCount) return;
+    collectionMenuCount.textContent = getReceivedSalimGiftCount() + " / " + SALIM_GIFTS.length;
+  }
+
+  function getUnlockedAlbumCardCount() {
+    return ALBUM_CARDS.filter(function(card) { return Boolean(unlockedAlbumCards[card.id]); }).length;
+  }
+
+  function updateAlbumMenuCount() {
+    if (albumMenuCount) {
+      albumMenuCount.textContent = getUnlockedAlbumCardCount() + " / " + ALBUM_CARDS.length;
+    }
+  }
+
+  function unlockEligibleAlbumCards(showNotice) {
+    const level = getLevel();
+    let unlockedAny = false;
+
+    ALBUM_CARDS.forEach(function(card) {
+      if (unlockedAlbumCards[card.id]) return;
+      if (level < card.unlockLevel) return;
+
+      unlockedAlbumCards[card.id] = true;
+      albumCardUnlockedDates[card.id] = new Date().toLocaleDateString("ja-JP");
+      unlockedAny = true;
+
+      if (showNotice) {
+        showAchievementToast("🖼️ 新しいカードを入手しました：「" + card.name + "」");
+      }
+
+      if (typeof gtag === "function") {
+        gtag("event", "album_card_unlock", {
+          card_id: card.id,
+          card_name: card.name,
+          unlock_level: card.unlockLevel
+        });
+      }
+    });
+
+    if (unlockedAny) {
+      updateAlbumMenuCount();
+      renderAlbum(true);
+      saveGame();
+    }
+  }
+
+  function renderAlbum(force) {
+    if (!albumSummary || !albumGrid) return;
+
+    const unlockedCount = getUnlockedAlbumCardCount();
+    albumSummary.textContent = "集めたカード：" + unlockedCount + " / " + ALBUM_CARDS.length;
+    albumGrid.innerHTML = "";
+
+    ALBUM_CARDS.forEach(function(card) {
+      const unlocked = Boolean(unlockedAlbumCards[card.id]);
+
+      const cardBox = document.createElement("div");
+      cardBox.className = "album-card" + (unlocked ? "" : " locked");
+
+      const thumb = document.createElement("div");
+      thumb.className = "album-thumb";
+
+      if (unlocked) {
+        const image = document.createElement("img");
+        image.src = card.image;
+        image.alt = card.name;
+        thumb.appendChild(image);
+      } else {
+        thumb.textContent = "？";
+      }
+
+      const info = document.createElement("div");
+
+      const name = document.createElement("div");
+      name.className = "album-name";
+      name.textContent = unlocked ? card.name : "未入手カード";
+
+      const condition = document.createElement("div");
+      condition.className = "album-condition";
+      condition.textContent = card.conditionText;
+
+      const comment = document.createElement("div");
+      comment.className = "album-comment";
+      if (unlocked) {
+        const date = albumCardUnlockedDates[card.id] ? "入手日：" + albumCardUnlockedDates[card.id] + "｜" : "";
+        comment.textContent = date + "「" + card.comment + "」";
+      } else {
+        comment.textContent = "条件を達成すると入手できます。";
+      }
+
+      info.appendChild(name);
+      info.appendChild(condition);
+      info.appendChild(comment);
+
+      cardBox.appendChild(thumb);
+      cardBox.appendChild(info);
+
+      if (unlocked) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "大きく見る";
+        button.onclick = function() { openAlbumCard(card.id); };
+        cardBox.appendChild(button);
+        thumb.onclick = function() { openAlbumCard(card.id); };
+      }
+
+      albumGrid.appendChild(cardBox);
+    });
+
+    updateAlbumMenuCount();
+  }
+
+  function getAlbumCardById(cardId) {
+    return ALBUM_CARDS.find(function(card) { return card.id === cardId; }) || null;
+  }
+
+  function openAlbumCard(cardId) {
+    const card = getAlbumCardById(cardId);
+    if (!card || !unlockedAlbumCards[cardId]) return;
+
+    if (albumViewerTitle) albumViewerTitle.textContent = card.name;
+    if (albumViewerImage) {
+      albumViewerImage.src = card.image;
+      albumViewerImage.alt = card.name;
+    }
+
+    const viewer = document.getElementById("albumViewerMenu");
+    if (viewer) {
+      viewer.classList.add("open");
+      viewer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+
+    if (typeof gtag === "function") {
+      gtag("event", "album_card_view", {
+        card_id: card.id,
+        card_name: card.name
+      });
+    }
+  }
+
+  function renderCollection(force) {
+    if (!collectionGrid || !collectionSummary) return;
+    if (!force && !achievementsDirty) return;
+
+    const receivedCount = getReceivedSalimGiftCount();
+    collectionSummary.textContent = "集めた贈り物：" + receivedCount + " / " + SALIM_GIFTS.length;
+    collectionGrid.innerHTML = "";
+
+    SALIM_GIFTS.forEach(function(gift) {
+      const record = receivedSalimGifts[gift.id];
+      const isReceived = Boolean(record);
+
+      const card = document.createElement("div");
+      card.className = "collection-card" + (isReceived ? "" : " locked");
+
+      const icon = document.createElement("div");
+      icon.className = "collection-icon";
+
+      if (isReceived && gift.image) {
+        const iconImage = document.createElement("img");
+        iconImage.src = gift.image;
+        iconImage.alt = gift.name;
+        icon.appendChild(iconImage);
+      } else {
+        icon.textContent = isReceived ? gift.icon : "？";
+      }
+
+      const body = document.createElement("div");
+
+      const name = document.createElement("div");
+      name.className = "collection-name";
+      name.textContent = isReceived ? gift.name : "？？？";
+
+      const date = document.createElement("div");
+      date.className = "collection-date";
+      date.textContent = isReceived ? "初めて受け取った日：" + record.date : "未入手";
+
+      const desc = document.createElement("div");
+      desc.className = "collection-desc";
+      desc.textContent = isReceived ? gift.description : "入手条件：" + gift.conditionText;
+
+      const comment = document.createElement("div");
+      comment.className = "collection-comment";
+      comment.textContent = isReceived ? "「" + getSalimGiftComment(gift) + "」" : "「？？？」";
+
+      body.appendChild(name);
+      body.appendChild(date);
+      body.appendChild(desc);
+      body.appendChild(comment);
+
+      card.appendChild(icon);
+      card.appendChild(body);
+
+      if (isReceived && gift.image) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "大きく見る";
+        button.onclick = function() { openSalimGiftImage(gift.id); };
+        card.appendChild(button);
+        icon.onclick = function() { openSalimGiftImage(gift.id); };
+
+        const placeButton = document.createElement("button");
+        placeButton.type = "button";
+        placeButton.textContent = "部屋に配置する";
+        placeButton.onclick = function() { placePlaceableInRoom(getPlaceableId("gift", gift.id)); closeMenu("collectionMenu"); };
+        card.appendChild(placeButton);
+      }
+
+      collectionGrid.appendChild(card);
+    });
+  }
+
+  function openSalimGiftImage(giftId) {
+    const gift = getSalimGiftById(giftId);
+    if (!gift || !receivedSalimGifts[giftId] || !gift.image) return;
+
+    if (albumViewerTitle) albumViewerTitle.textContent = gift.name;
+    if (albumViewerImage) {
+      albumViewerImage.src = gift.image;
+      albumViewerImage.alt = gift.name;
+    }
+
+    const viewer = document.getElementById("albumViewerMenu");
+    if (viewer) {
+      viewer.classList.add("open");
+      viewer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+
+    if (typeof gtag === "function") {
+      gtag("event", "salim_gift_view", {
+        gift_id: gift.id,
+        gift_name: gift.name
+      });
+    }
+  }
+
+  function isSalimBirthday() {
+    const now = new Date();
+    return now.getMonth() + 1 === 7 && now.getDate() === 30;
+  }
+
+  function processBirthdayVisit() {
+    if (!isSalimBirthday()) return null;
+    const year = new Date().getFullYear();
+    birthdayVisited = true;
+    if (lastBirthdayEventYear === year) return null;
+    lastBirthdayEventYear = year;
+    return pickRandom(BIRTHDAY_MESSAGES);
+  }
+
+  function processDailyLoginBonus() {
+    const today = getLocalDateString(new Date());
+    const birthdayLine = processBirthdayVisit();
+    if (lastLoginDate === today) {
+      return birthdayLine ? { reward: 0, birthday: true, line: birthdayLine } : null;
+    }
+
+    if (lastLoginDate === getYesterdayString()) consecutiveLoginDays += 1;
+    else consecutiveLoginDays = 1;
+
+    totalLoginDays += 1;
+    longestLoginStreak = Math.max(longestLoginStreak, consecutiveLoginDays);
+    lastLoginDate = today;
+
+    const cycleDay = ((consecutiveLoginDays - 1) % 7) + 1;
+    const reward = LOGIN_BONUS_REWARDS[cycleDay - 1];
+    addAffinity(reward, false);
+
+    return {
+      reward: reward,
+      cycleDay: cycleDay,
+      birthday: Boolean(birthdayLine),
+      line: birthdayLine || pickRandom(LOGIN_MESSAGES[getDialogueTier()])
+    };
+  }
+
+  function showLoginBonusPopup(data) {
+    if (!data) return;
+    loginBonusTitle.textContent = data.birthday ? "🎂 サリムの誕生日" : "🎁 今日のひとこと";
+    loginBonusLine.textContent = "「" + formatSalimLine(data.line) + "」";
+    loginBonusReward.textContent = data.reward > 0 ? "ログインボーナス：💖 +" + formatNumber(data.reward) : "誕生日限定メッセージ";
+    loginBonusStats.textContent = "連続ログイン：" + consecutiveLoginDays + "日｜累計ログイン：" + totalLoginDays + "日";
+    setMessage(data.line, 7);
+    openMenu("loginBonusMenu");
+  }
+
+  function getTimePeriod() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) return "morning";
+    if (hour >= 11 && hour < 18) return "day";
+    if (hour >= 18 && hour < 24) return "night";
+    return "lateNight";
+  }
+
+  function getBackgroundPeriod() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) return "morning";
+    if (hour >= 11 && hour < 16) return "day";
+    if (hour >= 16 && hour < 19) return "evening";
+    return "night";
+  }
+
+  function updateRoomBackground() {
+    const room = document.getElementById("roomAnchor");
+    if (!room) return;
+
+    const period = getBackgroundPeriod();
+    const imageUrl = BACKGROUND_IMAGES[period] || BACKGROUND_IMAGES.evening;
+
+    room.style.backgroundImage =
+      'linear-gradient(rgba(255,250,240,0.04), rgba(255,250,240,0.04)), url("' + imageUrl + '")';
+  }
+
+  function getItemMemoryPool() {
+    const pool = [];
+    ITEMS.forEach(function(item) {
+      if (purchasedItems[item.id] && ITEM_MEMORY_MESSAGES[item.id]) {
+        pool.push.apply(pool, ITEM_MEMORY_MESSAGES[item.id]);
+      }
+    });
+    return pool;
+  }
+
+  function startAffinityBoost(multiplier, seconds) {
+    affinityMultiplier = multiplier;
+    affinityBoostUntil = Date.now() + seconds * 1000;
+    updateBoostBox();
+  }
+
+  function updateBoostBox() {
+    if (!boostBox) return;
+    const multiplier = getActiveAffinityMultiplier();
+    if (multiplier <= 1) {
+      boostBox.classList.remove("visible");
+      boostBox.textContent = "";
+      return;
+    }
+    const seconds = Math.max(0, Math.ceil((affinityBoostUntil - Date.now()) / 1000));
+    boostBox.textContent = "✨ 💖ポイント獲得 " + multiplier + "倍｜あと" + seconds + "秒";
+    boostBox.classList.add("visible");
+  }
+
+  function updateLoginStats() {
+    if (loginStats) loginStats.textContent = "累計ログイン：" + totalLoginDays + "日｜連続ログイン：" + consecutiveLoginDays + "日";
+  }
+
+  function formatNumber(value) {
+    value = Math.floor(Number(value) || 0);
+    if (value < 10000000) return String(value);
+
+    const units = [
+      { value: 100000000, label: "億" },
+      { value: 10000, label: "万" }
+    ];
+
+    for (let i = 0; i < units.length; i++) {
+      if (value >= units[i].value) {
+        const shortValue = value / units[i].value;
+        const text = shortValue >= 100 ? Math.floor(shortValue) : Math.floor(shortValue * 10) / 10;
+        return text + units[i].label;
+      }
+    }
+
+    return String(value);
+  }
+
+  function getLevel() {
+    return Math.floor(Math.sqrt(totalAffinityEarned / LEVEL_GROWTH_BASE)) + 1;
+  }
+
+  function getRelationshipName(level) {
+    if (level >= 1000) return "唯一無二の伴侶";
+    if (level >= 500) return "最愛の人";
+    if (level >= 250) return "恋人";
+    if (level >= 100) return "大切な存在";
+    if (level >= 50) return "心惹かれる相手";
+    if (level >= 25) return "親しい友人";
+    if (level >= 10) return "顔なじみ";
+    return "王宮を訪れた客人";
+  }
+
+  function updateLevelBox() {
+    const level = getLevel();
+    levelBox.textContent = "Lv." + level + "｜" + getRelationshipName(level);
+  }
+
+  function getStatusKey() {
+    if (energy <= 0) return "exhausted";
+    if (energy <= 30) return "tired";
+    if (mood >= 95) return "superhappy";
+    if (mood >= 70) return "happy";
+    return "normal";
+  }
+
+  function pickRandom(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function getDialogueTier() {
+    const level = getLevel();
+    if (level >= 100) return "late";
+    if (level >= 25) return "middle";
+    return "early";
+  }
+
+  function formatSalimLine(line) {
+    return line || "";
+  }
+
+  function getPurchasedItemCount() {
+    return ITEMS.filter(function(item) { return Boolean(purchasedItems[item.id]); }).length;
+  }
+
+  function clampNumber(value, min, max) {
+    value = Number(value);
+    if (!Number.isFinite(value)) return min;
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function getDefaultItemLayout(itemId) {
+    const placeable = getPlaceableById(itemId);
+    if (placeable && placeable.type !== "item") {
+      return { left: 62, top: 43, width: 20, zIndex: 2, flip: false };
+    }
+    const base = DEFAULT_ITEM_LAYOUTS[itemId] || { left: 62, top: 43, width: 20, zIndex: 2, flip: false };
+    return { left: base.left, top: base.top, width: base.width, zIndex: base.zIndex, flip: Boolean(base.flip) };
+  }
+
+  function getItemLayout(itemId) {
+    const base = getDefaultItemLayout(itemId);
+    const custom = itemLayouts[itemId] || {};
+    return {
+      left: clampNumber(custom.left !== undefined ? custom.left : base.left, 0, 95),
+      top: clampNumber(custom.top !== undefined ? custom.top : base.top, 0, 95),
+      width: clampNumber(custom.width !== undefined ? custom.width : base.width, 3, 45),
+      zIndex: Math.round(clampNumber(custom.zIndex !== undefined ? custom.zIndex : base.zIndex, 1, 6)),
+      flip: custom.flip !== undefined ? Boolean(custom.flip) : Boolean(base.flip)
+    };
+  }
+
+  function saveItemLayout(itemId, layout) {
+    itemLayouts[itemId] = {
+      left: Math.round(clampNumber(layout.left, 0, 95) * 10) / 10,
+      top: Math.round(clampNumber(layout.top, 0, 95) * 10) / 10,
+      width: Math.round(clampNumber(layout.width, 3, 45) * 10) / 10,
+      zIndex: Math.round(clampNumber(layout.zIndex, 1, 6)),
+      flip: Boolean(layout.flip)
+    };
+    saveGame();
+  }
+
+  function getItemById(itemId) {
+    const placeable = getPlaceableById(itemId);
+    if (placeable) return placeable;
+    return null;
+  }
+
+
+  function getPlaceableId(type, id) {
+    return type === "item" ? id : type + "__" + id;
+  }
+
+  function getPlaceableById(placeableId) {
+    if (!placeableId) return null;
+
+    const item = ITEMS.find(function(entry) { return entry.id === placeableId; });
+    if (item) {
+      return {
+        type: "item",
+        id: item.id,
+        placeableId: item.id,
+        name: item.name,
+        image: item.image,
+        owned: Boolean(purchasedItems[item.id]),
+        sourceLabel: "アイテム"
+      };
+    }
+
+    if (placeableId.indexOf("gift__") === 0) {
+      const giftId = placeableId.slice("gift__".length);
+      const gift = getSalimGiftById(giftId);
+      if (!gift) return null;
+      return {
+        type: "gift",
+        id: gift.id,
+        placeableId: placeableId,
+        name: gift.name,
+        image: gift.image,
+        owned: Boolean(receivedSalimGifts[gift.id]),
+        sourceLabel: "贈り物"
+      };
+    }
+
+    if (placeableId.indexOf("souvenir__") === 0) {
+      const souvenirId = placeableId.slice("souvenir__".length);
+      const souvenir = getOutingSouvenirById(souvenirId);
+      if (!souvenir) return null;
+      return {
+        type: "souvenir",
+        id: souvenir.id,
+        placeableId: placeableId,
+        name: souvenir.name,
+        image: souvenir.image,
+        owned: Boolean(ownedOutingSouvenirs[souvenir.id]),
+        sourceLabel: "お土産"
+      };
+    }
+
+    return null;
+  }
+
+
+  function isPlaceablePlaced(placeable) {
+    if (!placeable || !placeable.owned) return false;
+
+    const key = placeable.placeableId || placeable.id;
+
+    if (Object.prototype.hasOwnProperty.call(placedRoomItems, key)) {
+      return Boolean(placedRoomItems[key]);
+    }
+
+    // 既存の購入済みアイテムは、今まで通り最初から部屋に表示する。
+    // 贈り物・お土産は「部屋に配置する」を押したものだけ表示する。
+    return placeable.type === "item";
+  }
+
+  function setPlaceablePlaced(placeableId, shouldPlace) {
+    const placeable = getPlaceableById(placeableId);
+    if (!placeable || !placeable.owned) return false;
+
+    placedRoomItems[placeable.placeableId] = Boolean(shouldPlace);
+
+    if (!shouldPlace && activePlacementItemId === placeable.placeableId) {
+      activePlacementItemId = "";
+      placementStartLayout = null;
+      updatePlacementPanel();
+    }
+
+    saveGame();
+    updateRoomItems();
+    renderPlacementMenu(true);
+    return true;
+  }
+
+  function placePlaceableInRoom(placeableId) {
+    const placeable = getPlaceableById(placeableId);
+    if (!placeable || !placeable.owned) {
+      setMessage("まずはアイテム購入やおでかけでの入手をしてから配置しよう", 4);
+      closeMenu("placementMenu");
+      closeMenu("collectionMenu");
+      closeMenu("souvenirMenu");
+      scrollToSalimReaction();
+      return;
+    }
+
+    setPlaceablePlaced(placeable.placeableId, true);
+    startPlacementMode(placeable.placeableId);
+  }
+
+  function putAwayPlaceable(placeableId) {
+    const placeable = getPlaceableById(placeableId);
+    if (!placeable || !placeable.owned) return;
+
+    setPlaceablePlaced(placeable.placeableId, false);
+    setMessage("「" + placeable.name + "」をしまったぞ。また飾りたくなったら、配置メニューから選べ", 4);
+    scrollToSalimReaction();
+  }
+
+  function putAwayActivePlacementItem() {
+    if (!activePlacementItemId) return;
+    const placeable = getPlaceableById(activePlacementItemId);
+    if (!placeable) return;
+
+    putAwayPlaceable(activePlacementItemId);
+  }
+
+  function getOwnedPlaceables() {
+    const list = [];
+    ITEMS.forEach(function(item) {
+      if (purchasedItems[item.id]) {
+        list.push({
+          type: "item",
+          id: item.id,
+          placeableId: item.id,
+          name: item.name,
+          image: item.image,
+          owned: true,
+          sourceLabel: "アイテム"
+        });
+      }
+    });
+
+    SALIM_GIFTS.forEach(function(gift) {
+      if (receivedSalimGifts[gift.id] && gift.image) {
+        list.push({
+          type: "gift",
+          id: gift.id,
+          placeableId: getPlaceableId("gift", gift.id),
+          name: gift.name,
+          image: gift.image,
+          owned: true,
+          sourceLabel: "贈り物"
+        });
+      }
+    });
+
+    OUTING_SOUVENIRS.forEach(function(souvenir) {
+      if (ownedOutingSouvenirs[souvenir.id] && souvenir.image) {
+        list.push({
+          type: "souvenir",
+          id: souvenir.id,
+          placeableId: getPlaceableId("souvenir", souvenir.id),
+          name: souvenir.name,
+          image: souvenir.image,
+          owned: true,
+          sourceLabel: "お土産"
+        });
+      }
+    });
+
+    return list;
+  }
+
+  function getOutingSouvenirById(souvenirId) {
+    return OUTING_SOUVENIRS.find(function(item) { return item.id === souvenirId; }) || null;
+  }
+
+  function openOutingSouvenirImage(souvenirId) {
+    const souvenir = getOutingSouvenirById(souvenirId);
+    if (!souvenir || !ownedOutingSouvenirs[souvenir.id] || !souvenir.image) return;
+
+    if (albumViewerTitle) albumViewerTitle.textContent = souvenir.name;
+    if (albumViewerImage) {
+      albumViewerImage.src = souvenir.image;
+      albumViewerImage.alt = souvenir.name;
+    }
+
+    const viewer = document.getElementById("albumViewerMenu");
+    if (viewer) {
+      viewer.classList.add("open");
+      viewer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+  }
+
+  function renderOutingSouvenirs() {
+    if (!souvenirGrid || !souvenirSummary) return;
+    const ownedCount = OUTING_SOUVENIRS.filter(function(souvenir) { return Boolean(ownedOutingSouvenirs[souvenir.id]); }).length;
+    souvenirSummary.textContent = "集めたお土産：" + ownedCount + " / " + OUTING_SOUVENIRS.length;
+    souvenirGrid.innerHTML = "";
+
+    OUTING_SOUVENIRS.forEach(function(souvenir) {
+      const record = ownedOutingSouvenirs[souvenir.id];
+      const owned = Boolean(record);
+      const card = document.createElement("div");
+      card.className = "collection-card" + (owned ? "" : " locked");
+
+      const icon = document.createElement("div");
+      icon.className = "collection-icon";
+
+      if (owned && souvenir.image) {
+        const iconImage = document.createElement("img");
+        iconImage.src = souvenir.image;
+        iconImage.alt = souvenir.name;
+        icon.appendChild(iconImage);
+        icon.onclick = function() { openOutingSouvenirImage(souvenir.id); };
+      } else {
+        icon.textContent = "？";
+      }
+
+      const body = document.createElement("div");
+
+      const name = document.createElement("div");
+      name.className = "collection-name";
+      name.textContent = owned ? souvenir.name : "？？？";
+
+      const date = document.createElement("div");
+      date.className = "collection-date";
+      date.textContent = owned ? "入手日：" + (record.date || "不明") + "｜" + souvenir.placeName : "未入手";
+
+      const desc = document.createElement("div");
+      desc.className = "collection-desc";
+      desc.textContent = owned ? souvenir.description : "おでかけで入手すると、部屋に配置できます。";
+
+      const comment = document.createElement("div");
+      comment.className = "collection-comment";
+      comment.textContent = owned ? "「" + souvenir.comment + "」" : "「？？？」";
+
+      body.appendChild(name);
+      body.appendChild(date);
+      body.appendChild(desc);
+      body.appendChild(comment);
+      card.appendChild(icon);
+      card.appendChild(body);
+
+      if (owned && souvenir.image) {
+        const viewButton = document.createElement("button");
+        viewButton.type = "button";
+        viewButton.textContent = "大きく見る";
+        viewButton.onclick = function() { openOutingSouvenirImage(souvenir.id); };
+        card.appendChild(viewButton);
+
+        const placeButton = document.createElement("button");
+        placeButton.type = "button";
+        placeButton.textContent = "部屋に配置する";
+        placeButton.onclick = function() { placePlaceableInRoom(getPlaceableId("souvenir", souvenir.id)); closeMenu("souvenirMenu"); };
+        card.appendChild(placeButton);
+      }
+
+      souvenirGrid.appendChild(card);
+    });
+  }
+
+  function renderPlacementMenu(force) {
+    if (!placementGrid || !placementEmpty) return;
+    placementGrid.innerHTML = "";
+
+    const placeables = getOwnedPlaceables();
+    placementEmpty.textContent = placeables.length > 0
+      ? "配置したいものを選んでください。アイテム・贈り物・お土産を自由に飾れます。"
+      : "配置できるアイテム・贈り物・お土産がまだありません。先にアイテム購入やおでかけでの入手をしてください。";
+
+    let currentSection = "";
+
+    placeables.forEach(function(placeable) {
+      if (currentSection !== placeable.sourceLabel) {
+        currentSection = placeable.sourceLabel;
+        const section = document.createElement("div");
+        section.className = "placeable-section-label";
+        section.textContent = currentSection;
+        placementGrid.appendChild(section);
+      }
+
+      const card = document.createElement("div");
+      card.className = "item-card";
+
+      const image = document.createElement("img");
+      image.src = placeable.image;
+      image.alt = placeable.name;
+
+      const name = document.createElement("div");
+      name.className = "item-name";
+      name.textContent = placeable.name;
+
+      const cost = document.createElement("div");
+      cost.className = "item-cost";
+      const layout = getItemLayout(placeable.placeableId);
+      const isPlaced = isPlaceablePlaced(placeable);
+      cost.textContent = placeable.sourceLabel + "｜" + (isPlaced ? "配置中" : "しまっています") + "｜位置：" + layout.left + "% / " + layout.top + "%｜大きさ：" + layout.width + "%｜奥行き：" + layout.zIndex + "｜反転：" + (layout.flip ? "あり" : "なし");
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = isPlaced ? "調整" : "配置する";
+      button.onclick = function() { placePlaceableInRoom(placeable.placeableId); };
+
+      card.appendChild(image);
+      card.appendChild(name);
+      card.appendChild(cost);
+      card.appendChild(button);
+
+      if (isPlaced) {
+        const putAwayButton = document.createElement("button");
+        putAwayButton.type = "button";
+        putAwayButton.textContent = "しまう";
+        putAwayButton.onclick = function() { putAwayPlaceable(placeable.placeableId); };
+        card.appendChild(putAwayButton);
+      }
+
+      placementGrid.appendChild(card);
+    });
+  }
+
+  function updatePlacementPanel() {
+    if (!placementPanel || !placementPanelTitle) return;
+    const item = getItemById(activePlacementItemId);
+    if (!item) {
+      placementPanel.classList.remove("visible");
+      document.body.classList.remove("placement-mode-active");
+      placementPanelTitle.textContent = "アイテム配置を調整中";
+      return;
+    }
+
+    document.body.classList.add("placement-mode-active");
+    const layout = getItemLayout(item.placeableId || item.id);
+    placementPanel.classList.add("visible");
+    placementPanelTitle.textContent = "「" + item.name + "」を調整中｜位置 " + layout.left + "% / " + layout.top + "%｜大きさ " + layout.width + "%｜奥行き " + layout.zIndex + "｜反転 " + (layout.flip ? "あり" : "なし");
+  }
+
+  function startPlacementMode(itemId) {
+    const item = getItemById(itemId);
+    if (!item || !item.owned) {
+      setMessage("まずはアイテム購入やおでかけでの入手をしてから配置を調整しよう", 4);
+      closeMenu("placementMenu");
+      scrollToSalimReaction();
+      return;
+    }
+    activePlacementItemId = item.placeableId || item.id;
+    placedRoomItems[activePlacementItemId] = true;
+    placementStartLayout = Object.assign({}, getItemLayout(activePlacementItemId));
+    updatePlacementPanel();
+    updateRoomItems();
+    closeMenu("placementMenu");
+    closeMenu("collectionMenu");
+    closeMenu("souvenirMenu");
+    setMessage("配置を調整するぞ。少しずつ動かして、好きな場所に置いてみろ", 5);
+    scrollToSalimReaction();
+  }
+
+  function adjustActiveItemPosition(dx, dy) {
+    if (!activePlacementItemId) return;
+    const layout = getItemLayout(activePlacementItemId);
+    layout.left += dx;
+    layout.top += dy;
+    saveItemLayout(activePlacementItemId, layout);
+    updateRoomItems();
+    updatePlacementPanel();
+  }
+
+  function adjustActiveItemSize(delta) {
+    if (!activePlacementItemId) return;
+    const layout = getItemLayout(activePlacementItemId);
+    layout.width += delta;
+    saveItemLayout(activePlacementItemId, layout);
+    updateRoomItems();
+    updatePlacementPanel();
+  }
+
+  function adjustActiveItemDepth(delta) {
+    if (!activePlacementItemId) return;
+    const layout = getItemLayout(activePlacementItemId);
+    layout.zIndex += delta;
+    saveItemLayout(activePlacementItemId, layout);
+    updateRoomItems();
+    updatePlacementPanel();
+  }
+
+  function toggleActiveItemFlip() {
+    if (!activePlacementItemId) return;
+    const layout = getItemLayout(activePlacementItemId);
+    layout.flip = !layout.flip;
+    saveItemLayout(activePlacementItemId, layout);
+    updateRoomItems();
+    updatePlacementPanel();
+  }
+
+  function resetActiveItemPlacement() {
+    if (!activePlacementItemId) return;
+    delete itemLayouts[activePlacementItemId];
+    placementStartLayout = Object.assign({}, getItemLayout(activePlacementItemId));
+    saveGame();
+    updateRoomItems();
+    updatePlacementPanel();
+    setMessage("初期の位置・大きさ・奥行き・向きに戻したぞ", 3);
+  }
+
+  function finishPlacementMode() {
+    activePlacementItemId = "";
+    placementStartLayout = null;
+    updatePlacementPanel();
+    saveGame();
+    setMessage("配置を保存したぞ。なかなかいい部屋になってきたな", 4);
+  }
+
+  function cancelPlacementMode() {
+    if (activePlacementItemId && placementStartLayout) {
+      saveItemLayout(activePlacementItemId, placementStartLayout);
+      updateRoomItems();
+    }
+    activePlacementItemId = "";
+    placementStartLayout = null;
+    updatePlacementPanel();
+    setMessage("配置調整を閉じたぞ", 3);
+  }
+
+  function setMessage(line, lockSeconds) {
+    message.textContent = "「" + formatSalimLine(line) + "」";
+    messageLockTimer = lockSeconds || 3;
+    statusMessageTimer = 0;
+  }
+
+  function setNarrationMessage(line, lockSeconds) {
+    message.textContent = formatSalimLine(line);
+    messageLockTimer = lockSeconds || 3;
+    statusMessageTimer = 0;
+  }
+
+  function getGiftMemoryPool() {
+    const pool = [];
+    if (totalMilkTea > 0) pool.push.apply(pool, GIFT_MEMORY_MESSAGES.milkTea);
+    if (totalDatesNuts > 0) pool.push.apply(pool, GIFT_MEMORY_MESSAGES.datesNuts);
+    if (totalJewelJelly > 0) pool.push.apply(pool, GIFT_MEMORY_MESSAGES.jewelJelly);
+    return pool;
+  }
+
+  function setStatusMessage(statusKey) {
+    const tier = getDialogueTier();
+    const messageKey = statusKey + ":" + tier;
+
+    if (currentStatusKey !== messageKey || statusMessageTimer <= 0) {
+      const giftMemoryPool = getGiftMemoryPool();
+      const itemMemoryPool = getItemMemoryPool();
+      const timePool = TIME_MESSAGES[getTimePeriod()] || [];
+      const honestPool = RARE_HONEST_MESSAGES[tier] || [];
+      const calmStatus = statusKey === "normal" || statusKey === "happy";
+      const useHonestMessage = honestPool.length > 0 && calmStatus && Math.random() < 0.06;
+      const useTimeMessage = !useHonestMessage && timePool.length > 0 && calmStatus && Math.random() < 0.25;
+      const useItemMemory = !useHonestMessage && !useTimeMessage && statusKey === "normal" && itemMemoryPool.length > 0 && Math.random() < 0.18;
+      const useGiftMemory = !useHonestMessage && !useTimeMessage && !useItemMemory && statusKey === "normal" && giftMemoryPool.length > 0 && Math.random() < 0.22;
+      const pool = (STATUS_MESSAGES[tier] && STATUS_MESSAGES[tier][statusKey]) || STATUS_MESSAGES.early.normal;
+      const picked = useHonestMessage
+        ? pickRandom(honestPool)
+        : useTimeMessage
+          ? pickRandom(timePool)
+          : useItemMemory
+            ? pickRandom(itemMemoryPool)
+            : useGiftMemory
+              ? pickRandom(giftMemoryPool)
+              : pickRandom(pool);
+
+      currentStatusKey = messageKey;
+      message.textContent = "「" + formatSalimLine(picked) + "」";
+      statusMessageTimer = STATUS_MESSAGE_SECONDS;
+    }
+  }
+
+  function setSalimImageByStatus() {
+    if (temporaryImageTimer > 0 || isBlinking) return;
+    salimImage.src = IMAGES[getStatusKey()];
+  }
+
+  function startBlink() {
+    if (temporaryImageTimer > 0 || isBlinking) return;
+
+    isBlinking = true;
+    salimImage.src = IMAGES.blink;
+
+    if (blinkTimeoutId) clearTimeout(blinkTimeoutId);
+    blinkTimeoutId = window.setTimeout(function() {
+      isBlinking = false;
+      blinkTimeoutId = null;
+      setSalimImageByStatus();
+      blinkTimer = 4 + Math.floor(Math.random() * 5);
+    }, 160);
+  }
+
+  function updateBlink() {
+    if (temporaryImageTimer > 0) {
+      isBlinking = false;
+      if (blinkTimeoutId) {
+        clearTimeout(blinkTimeoutId);
+        blinkTimeoutId = null;
+      }
+      return;
+    }
+
+    if (isBlinking) return;
+
+    blinkTimer -= 1;
+    if (blinkTimer <= 0) startBlink();
+  }
+
+  function showTemporaryImage(imageUrl, seconds) {
+    isBlinking = false;
+    if (blinkTimeoutId) {
+      clearTimeout(blinkTimeoutId);
+      blinkTimeoutId = null;
+    }
+    salimImage.src = imageUrl;
+    temporaryImageTimer = seconds;
+  }
+
+  function createRoomItems() {
+    if (!roomItems) return;
+    roomItems.innerHTML = "";
+
+    function addRoomItem(placeableId, imageUrl, name) {
+      const image = document.createElement("img");
+      image.className = "room-item item-" + placeableId.replace(/[^a-zA-Z0-9_-]/g, "-");
+      image.dataset.itemId = placeableId;
+      image.src = imageUrl;
+      image.alt = name;
+      roomItems.appendChild(image);
+    }
+
+    ITEMS.forEach(function(item) {
+      addRoomItem(item.id, item.image, item.name);
+    });
+
+    SALIM_GIFTS.forEach(function(gift) {
+      if (!gift.image) return;
+      addRoomItem(getPlaceableId("gift", gift.id), gift.image, gift.name);
+    });
+
+    OUTING_SOUVENIRS.forEach(function(souvenir) {
+      if (!souvenir.image) return;
+      addRoomItem(getPlaceableId("souvenir", souvenir.id), souvenir.image, souvenir.name);
+    });
+  }
+
+  function renderItemShop() {
+    if (!itemGrid) return;
+    itemGrid.innerHTML = "";
+
+    ITEMS.forEach(function(item) {
+      const card = document.createElement("div");
+      card.className = "item-card";
+
+      const image = document.createElement("img");
+      image.src = item.image;
+      image.alt = item.name;
+
+      const name = document.createElement("div");
+      name.className = "item-name";
+      name.textContent = item.name;
+
+      const cost = document.createElement("div");
+      cost.className = "item-cost";
+      cost.textContent = "必要💖：" + formatNumber(item.price);
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.itemId = item.id;
+      button.onclick = function() { buyItem(item.id); };
+
+      card.appendChild(image);
+      card.appendChild(name);
+      card.appendChild(cost);
+      card.appendChild(button);
+      itemGrid.appendChild(card);
+    });
+
+    updateItemShop();
+  }
+
+  function updateItemShop() {
+    if (!itemGrid) return;
+
+    itemGrid.querySelectorAll("button[data-item-id]").forEach(function(button) {
+      const itemId = button.dataset.itemId;
+      const owned = Boolean(purchasedItems[itemId]);
+      button.disabled = owned;
+      button.textContent = owned ? "購入済み" : "購入する";
+    });
+
+    if (itemMenuCount) itemMenuCount.textContent = getPurchasedItemCount() + " / " + ITEMS.length;
+  }
+
+  function updateRoomItems() {
+    if (!roomItems) return;
+
+    roomItems.querySelectorAll(".room-item[data-item-id]").forEach(function(image) {
+      const itemId = image.dataset.itemId;
+      const placeable = getPlaceableById(itemId);
+      const visible = isPlaceablePlaced(placeable);
+      const layout = getItemLayout(itemId);
+
+      image.classList.toggle("visible", visible);
+      image.style.left = layout.left + "%";
+      image.style.top = layout.top + "%";
+      image.style.width = layout.width + "%";
+      image.style.zIndex = layout.zIndex;
+      image.style.transform = layout.flip ? "scaleX(-1)" : "scaleX(1)";
+    });
+  }
+
+  function buyItem(itemId) {
+    const item = ITEMS.find(function(entry) { return entry.id === itemId; });
+    if (!item || purchasedItems[itemId]) return;
+
+    if (affinity < item.price) {
+      setMessage(pickRandom(NOT_ENOUGH_AFFINITY_MESSAGES), 3);
+      updateScreen();
+      closeMenu("itemMenu");
+      scrollToSalimReaction();
+      return;
+    }
+
+    affinity -= item.price;
+    purchasedItems[itemId] = true;
+    updateRoomItems();
+    updateItemShop();
+    renderPlacementMenu(true);
+    setMessage(item.message, 4);
+    updateScreen();
+    closeMenu("itemMenu");
+    scrollToSalimReaction();
+  }
+
+
+  function updateSelectedTitle() {
+    if (selectedTitleName) selectedTitleName.textContent = selectedTitle || "なし";
+  }
+
+  function showAchievementToast(newAchievements) {
+    if (!achievementToast || !newAchievements.length) return;
+    const first = newAchievements[0];
+    achievementToast.textContent = newAchievements.length === 1
+      ? "🏅 実績解放：" + first.name
+      : "🏅 実績を" + newAchievements.length + "個解放！　" + first.name + " ほか";
+    achievementToast.classList.add("show");
+    achievementToastTimer = 4;
+  }
+
+  function checkAchievements(showNotice) {
+    const newlyUnlocked = [];
+
+    ACHIEVEMENTS.forEach(function(achievement) {
+      if (!unlockedAchievements[achievement.id] && achievement.current() >= achievement.target) {
+        unlockedAchievements[achievement.id] = true;
+        newlyUnlocked.push(achievement);
+      }
+    });
+
+    if (newlyUnlocked.length > 0 && !manualTitleSelection) {
+      const latestWithTitle = newlyUnlocked.filter(function(entry) { return Boolean(entry.title); }).pop();
+      if (latestWithTitle) selectedTitle = latestWithTitle.title;
+    }
+
+    if (newlyUnlocked.length > 0) achievementsDirty = true;
+    if (showNotice !== false && newlyUnlocked.length > 0) {
+      showAchievementToast(newlyUnlocked);
+    }
+    updateSelectedTitle();
+    updateAchievementMenuCount();
+    return newlyUnlocked;
+  }
+
+  function selectTitle(title) {
+    selectedTitle = title || "なし";
+    manualTitleSelection = true;
+    updateSelectedTitle();
+    saveGame();
+    achievementsDirty = true;
+    renderAchievements(true);
+  }
+
+  function updateAchievementMenuCount() {
+    if (!achievementMenuCount) return;
+    const unlockedCount = ACHIEVEMENTS.filter(function(entry) { return Boolean(unlockedAchievements[entry.id]); }).length;
+    achievementMenuCount.textContent = unlockedCount + " / " + ACHIEVEMENTS.length;
+  }
+
+  function renderAchievements(force) {
+    if (!achievementGrid || !achievementSummary) return;
+    if (!force && !achievementsDirty) return;
+    achievementGrid.innerHTML = "";
+
+    const unlockedCount = ACHIEVEMENTS.filter(function(entry) { return Boolean(unlockedAchievements[entry.id]); }).length;
+    achievementSummary.textContent = "解放済み：" + unlockedCount + " / " + ACHIEVEMENTS.length + "　｜　現在の称号：" + (selectedTitle || "なし");
+    updateAchievementMenuCount();
+
+    ACHIEVEMENTS.forEach(function(achievement) {
+      const unlocked = Boolean(unlockedAchievements[achievement.id]);
+      const current = Math.min(achievement.current(), achievement.target);
+      const card = document.createElement("div");
+      card.className = "achievement-card" + (unlocked ? "" : " locked");
+
+      const top = document.createElement("div");
+      top.className = "achievement-top";
+      top.textContent = (unlocked ? "🏅 " + achievement.name : "🔒 ？？？");
+
+      const desc = document.createElement("div");
+      desc.className = "achievement-desc";
+      desc.textContent = achievement.description;
+
+      const progress = document.createElement("div");
+      progress.className = "achievement-progress";
+      progress.textContent = "進捗：" + formatNumber(current) + " / " + formatNumber(achievement.target)
+        + (achievement.title ? "　｜　称号：" + (unlocked ? achievement.title : "？？？") : "");
+
+      card.appendChild(top);
+      card.appendChild(desc);
+      card.appendChild(progress);
+
+      if (unlocked && achievement.title) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = selectedTitle === achievement.title ? "設定中" : "称号に設定";
+        button.disabled = selectedTitle === achievement.title;
+        button.onclick = function() { selectTitle(achievement.title); };
+        card.appendChild(button);
+      }
+
+      achievementGrid.appendChild(card);
+    });
+
+    achievementsDirty = false;
+  }
+
+  function updateScreen() {
+    affinityText.textContent = formatNumber(affinity);
+    energyText.textContent = energy;
+    moodText.textContent = mood;
+    energyBar.style.width = energy + "%";
+    moodBar.style.width = mood + "%";
+    updateRoomBackground();
+    updateRoomItems();
+    updateLevelBox();
+    unlockEligibleAlbumCards(true);
+    updatePlacementPanel();
+    queueSalimGiftEvent(createEligibleSalimGiftEvents());
+    checkAchievements(true);
+    renderAchievements();
+    renderCollection();
+    updateCollectionMenuCount();
+    updateAlbumMenuCount();
+    renderAlbum(true);
+    setSalimImageByStatus();
+
+    if (messageLockTimer <= 0) {
+      setStatusMessage(getStatusKey());
+    }
+
+    saveGame();
+  }
+
+  function petSalim() {
+    addAffinity(5, true);
+    mood = Math.min(100, mood + 1);
+    totalPets += 1;
+    showTemporaryImage(IMAGES.petted, 3);
+    setMessage(pickRandom(PET_MESSAGES[getDialogueTier()]), 3);
+    updateScreen();
+  }
+
+  function pokeSalim() {
+    addAffinity(1, true);
+    totalPokes += 1;
+    showTemporaryImage(IMAGES.poked, 3);
+    const tier = getDialogueTier();
+    let pokeLine = pickRandom(POKE_MESSAGES[tier]);
+    if (totalPokes >= 30 && Math.random() < 0.35) pokeLine = tier === "late" ? "次は本当に捕まえるぞ。……お前が望んでいるなら別だが" : "次にやったら、こっちから捕まえるぞ";
+    setMessage(pokeLine, 3);
+    updateScreen();
+  }
+
+
+  function showSpecialToast(text) {
+    if (!achievementToast) return;
+    achievementToast.textContent = text;
+    achievementToast.classList.add("show");
+    achievementToastTimer = 5;
+  }
+
+  function canTriggerAmbientEvent() {
+    return !document.querySelector(".menu-overlay.open") && messageLockTimer <= 0;
+  }
+
+  function triggerRandomEvent() {
+    if (!canTriggerAmbientEvent()) return;
+    const pool = RANDOM_EVENTS.slice();
+    const itemPool = getItemMemoryPool();
+    if (itemPool.length > 0) pool.push({ line: pickRandom(itemPool), affinityGain: 20, moodGain: 3 });
+    const event = pickRandom(pool);
+    if (!event) return;
+    if (event.affinityGain) addAffinity(event.affinityGain, true);
+    if (event.energyGain) energy = Math.min(100, energy + event.energyGain);
+    if (event.moodGain) mood = Math.min(100, mood + event.moodGain);
+    setMessage(event.line, 7);
+    showSpecialToast("✨ 小さな出来事がありました");
+  }
+
+  function showRoomVisitor(characterKey, seconds) {
+    if (!roomVisitor) return;
+    const image = ROOM_VISITOR_IMAGES[characterKey];
+    if (!image) return;
+
+    roomVisitor.src = image;
+    roomVisitor.alt = characterKey === "farid" ? "ファリド" : "サラ";
+
+    roomVisitor.classList.remove("farid-visitor", "sara-visitor");
+    roomVisitor.classList.add(characterKey === "farid" ? "farid-visitor" : "sara-visitor");
+
+    roomVisitor.classList.add("visible");
+    roomVisitorTimer = seconds || 8;
+  }
+
+  function hideRoomVisitor() {
+    if (!roomVisitor) return;
+    roomVisitor.classList.remove("visible", "farid-visitor", "sara-visitor");
+    roomVisitor.src = "";
+    roomVisitor.alt = "";
+    roomVisitorTimer = 0;
+  }
+
+  function triggerRoomVisitorEvent() {
+    if (!canTriggerAmbientEvent()) return;
+    const event = pickRandom(ROOM_VISITOR_EVENTS);
+    if (!event) return;
+
+    showRoomVisitor(event.character, 10);
+    if (event.affinityGain) addAffinity(event.affinityGain, true);
+    if (event.energyGain) energy = Math.min(100, energy + event.energyGain);
+    if (event.moodGain) mood = Math.min(100, mood + event.moodGain);
+
+    setNarrationMessage(event.line, 9);
+    showSpecialToast(event.toast || "来客がありました");
+  }
+
+  function showChoiceEvent() {
+    if (!canTriggerAmbientEvent()) return;
+    activeChoiceEvent = pickRandom(CHOICE_EVENTS);
+    if (!activeChoiceEvent || !choiceEventPrompt || !choiceEventButtons) return;
+    choiceEventPrompt.textContent = activeChoiceEvent.prompt;
+    choiceEventButtons.innerHTML = "";
+    activeChoiceEvent.options.forEach(function(option, index) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = option.label + "｜" + option.seconds + "秒間 💖" + option.multiplier + "倍";
+      button.onclick = function() { chooseEventOption(index); };
+      choiceEventButtons.appendChild(button);
+    });
+    openMenu("choiceEventMenu");
+  }
+
+  function chooseEventOption(index) {
+    if (!activeChoiceEvent) return;
+    const option = activeChoiceEvent.options[index];
+    if (!option) return;
+    startAffinityBoost(option.multiplier, option.seconds);
+    setMessage(option.line, 6);
+    showSpecialToast("✨ " + option.seconds + "秒間、💖ポイント獲得" + option.multiplier + "倍！");
+    activeChoiceEvent = null;
+    closeMenu("choiceEventMenu");
+    scrollToSalimReaction();
+  }
+
+  function skipChoiceEvent() {
+    activeChoiceEvent = null;
+    closeMenu("choiceEventMenu");
+  }
+
+  function openMenu(menuId) {
+    closeMenu();
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
+
+    menu.classList.add("open");
+    menu.setAttribute("aria-hidden", "false");
+    document.body.classList.add("menu-open");
+
+    if (menuId === "achievementMenu") renderAchievements(true);
+    if (menuId === "collectionMenu") renderCollection(true);
+    if (menuId === "souvenirMenu") { ownedOutingSouvenirs = loadJSON("outingSouvenirs", {}); renderOutingSouvenirs(); }
+    if (menuId === "albumMenu") renderAlbum(true);
+    if (menuId === "placementMenu") renderPlacementMenu(true);
+    if (menuId === "settingsMenu") renderUserBirthdaySettings();
+
+    const scrollArea = menu.querySelector(".menu-scroll");
+    if (scrollArea) scrollArea.scrollTop = 0;
+  }
+
+  function closeMenu(menuId) {
+    const menus = menuId
+      ? [document.getElementById(menuId)]
+      : Array.from(document.querySelectorAll(".menu-overlay.open"));
+
+    menus.forEach(function(menu) {
+      if (!menu) return;
+      menu.classList.remove("open");
+      menu.setAttribute("aria-hidden", "true");
+    });
+
+    if (!document.querySelector(".menu-overlay.open")) {
+      document.body.classList.remove("menu-open");
+    }
+
+    if (menuId === "loginBonusMenu" || menuId === "salimGiftEventMenu") {
+      window.setTimeout(showPendingSalimGiftEvent, 220);
+    }
+  }
+
+  function closeMenuFromBackdrop(event, menuId) {
+    if (event.target === event.currentTarget) closeMenu(menuId);
+  }
+
+  function scrollToSalimReaction() {
+    window.setTimeout(function() {
+      const room = document.getElementById("roomAnchor");
+      if (room) room.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 40);
+  }
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeMenu();
+  });
+
+  function giveGift(giftId) {
+    const gift = GIFTS[giftId];
+    if (!gift) return;
+
+    if (affinity < gift.price) {
+      showTemporaryImage(IMAGES.exhausted, 3);
+      setMessage(pickRandom(NOT_ENOUGH_AFFINITY_MESSAGES), 3);
+      updateScreen();
+      closeMenu("giftMenu");
+      scrollToSalimReaction();
+      return;
+    }
+
+    affinity -= gift.price;
+    energy = Math.min(100, energy + gift.energyRecovery);
+    mood = Math.min(100, mood + gift.moodRecovery);
+    totalGifts += 1;
+
+    if (giftId === "milkTea") totalMilkTea += 1;
+    if (giftId === "datesNuts") totalDatesNuts += 1;
+    if (giftId === "jewelJelly") totalJewelJelly += 1;
+
+    showTemporaryImage(gift.image, gift.seconds);
+    setMessage(pickRandom(gift.messages), gift.seconds);
+    updateScreen();
+    closeMenu("giftMenu");
+    scrollToSalimReaction();
+  }
+
+
+  function collectSaveData() {
+    const data = {};
+    Object.keys(localStorage).forEach(function(key) {
+      if (!key.startsWith(STORAGE_PREFIX)) return;
+      data[key.slice(STORAGE_PREFIX.length)] = localStorage.getItem(key);
+    });
+
+    return {
+      saveType: "salim-room-save",
+      version: 1,
+      storagePrefix: STORAGE_PREFIX,
+      exportedAt: new Date().toISOString(),
+      data: data
+    };
+  }
+
+  function encodeSaveData(payload) {
+    const json = JSON.stringify(payload);
+    try {
+      const bytes = new TextEncoder().encode(json);
+      let binary = "";
+      bytes.forEach(function(byte) { binary += String.fromCharCode(byte); });
+      return "SALIMROOM_SAVE_V1:" + btoa(binary);
+    } catch (error) {
+      return "SALIMROOM_SAVE_V1:" + btoa(unescape(encodeURIComponent(json)));
+    }
+  }
+
+  function decodeSaveData(saveText) {
+    const trimmed = String(saveText || "").trim();
+    const prefix = "SALIMROOM_SAVE_V1:";
+    const body = trimmed.startsWith(prefix) ? trimmed.slice(prefix.length) : trimmed;
+    if (!body) throw new Error("empty");
+
+    const binary = atob(body);
+    let json = "";
+    try {
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      json = new TextDecoder().decode(bytes);
+    } catch (error) {
+      json = decodeURIComponent(escape(binary));
+    }
+
+    const payload = JSON.parse(json);
+    if (!payload || payload.saveType !== "salim-room-save" || !payload.data || typeof payload.data !== "object") {
+      throw new Error("invalid");
+    }
+    return payload;
+  }
+
+  function setSaveTransferNote(text) {
+    const note = document.getElementById("saveTransferNote");
+    if (note) note.textContent = text;
+  }
+
+  function selectSaveTransferText() {
+    const textarea = document.getElementById("saveTransferText");
+    if (!textarea) return;
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+  }
+
+  function exportSaveData() {
+    saveGame();
+    const textarea = document.getElementById("saveTransferText");
+    if (!textarea) return;
+
+    const saveText = encodeSaveData(collectSaveData());
+    textarea.value = saveText;
+    selectSaveTransferText();
+    setSaveTransferNote("セーブデータを書き出しました。文字列をコピーして、メモ帳やファイルアプリなどに保存してください。");
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(saveText).then(function() {
+        setSaveTransferNote("セーブデータを書き出してコピーしました。メモ帳やファイルアプリなどに保存してください。");
+      }).catch(function() {
+        setSaveTransferNote("セーブデータを書き出しました。文字列を選択してコピーしてください。");
+      });
+    }
+  }
+
+  function importSaveData() {
+    const textarea = document.getElementById("saveTransferText");
+    const saveText = textarea ? textarea.value : "";
+    let payload;
+
+    try {
+      payload = decodeSaveData(saveText);
+    } catch (error) {
+      window.alert("セーブデータを読み込めませんでした。文字列が途中で切れていないか確認してください。");
+      setSaveTransferNote("読み込みに失敗しました。セーブデータの文字列をもう一度確認してください。");
+      return;
+    }
+
+    const ok = window.confirm("現在の保存データに上書きして、読み込んだセーブデータを復元します。\nよろしいですか？");
+    if (!ok) return;
+
+    Object.keys(localStorage).forEach(function(key) {
+      if (key.startsWith(STORAGE_PREFIX)) localStorage.removeItem(key);
+    });
+
+    Object.keys(payload.data).forEach(function(name) {
+      localStorage.setItem(storageKey(name), String(payload.data[name]));
+    });
+
+    setSaveTransferNote("セーブデータを読み込みました。ページを再読み込みします。");
+    window.alert("セーブデータを読み込みました。ページを再読み込みします。");
+    window.location.reload();
+  }
+
+  function clearSaveTransferText() {
+    const textarea = document.getElementById("saveTransferText");
+    if (textarea) textarea.value = "";
+    setSaveTransferNote("入力欄を空にしました。");
+  }
+
+  function resetGame() {
+    const shouldReset = window.confirm("本当に最初からやり直しますか？\n💖ポイント、ステータス、購入済みアイテム、実績が初期状態に戻ります。");
+    if (!shouldReset) return;
+
+    Object.keys(localStorage).forEach(function(key) {
+      if (key.startsWith(STORAGE_PREFIX)) localStorage.removeItem(key);
+    });
+
+    affinity = 0;
+    energy = 50;
+    mood = 50;
+    totalAffinityEarned = 0;
+    totalPets = 0;
+    totalPokes = 0;
+    totalGifts = 0;
+    totalMilkTea = 0;
+    totalDatesNuts = 0;
+    totalJewelJelly = 0;
+    receivedSalimGifts = {};
+    ownedOutingSouvenirs = {};
+    unlockedAlbumCards = {};
+    albumCardUnlockedDates = {};
+    totalSalimGiftsReceived = 0;
+    birthdaySalimGiftReceived = false;
+    lastSalimGiftBirthdayYear = 0;
+    userBirthdayMonth = 0;
+    userBirthdayDay = 0;
+    lastUserBirthdayGiftYear = 0;
+    userBirthdayGiftReceived = false;
+    pendingSalimGiftEvents = [];
+    purchasedItems = {};
+    itemLayouts = {};
+    placedRoomItems = {};
+    activePlacementItemId = "";
+    placementStartLayout = null;
+    document.body.classList.remove("placement-mode-active");
+    unlockedAchievements = {};
+    selectedTitle = "なし";
+    manualTitleSelection = false;
+    lastLoginDate = "";
+    consecutiveLoginDays = 0;
+    totalLoginDays = 0;
+    longestLoginStreak = 0;
+    birthdayVisited = false;
+    lastBirthdayEventYear = 0;
+    affinityMultiplier = 1;
+    affinityBoostUntil = 0;
+    achievementToastTimer = 0;
+    achievementsDirty = true;
+    energyTimer = 0;
+    moodTimer = 0;
+    temporaryImageTimer = 0;
+    messageLockTimer = 0;
+    statusMessageTimer = 0;
+    currentStatusKey = "";
+    randomEventTimer = 0;
+    choiceEventTimer = 0;
+    activeChoiceEvent = null;
+    salimImage.src = IMAGES.normal;
+    updateRoomItems();
+    updateItemShop();
+    renderPlacementMenu(true);
+    updatePlacementPanel();
+    renderCollection(true);
+    updateCollectionMenuCount();
+    setMessage("来たか。待ってたぞ", 3);
+    updateScreen();
+    closeMenu("settingsMenu");
+  }
+
+  createRoomItems();
+  renderItemShop();
+  renderPlacementMenu(true);
+  updateRoomItems();
+  updatePlacementPanel();
+  applyOfflineProgress();
+  const dailyLoginResult = processDailyLoginBonus();
+  queueSalimGiftEvent(createEligibleSalimGiftEvents());
+
+  checkAchievements(false);
+  renderAchievements(true);
+  renderCollection(true);
+  renderOutingSouvenirs();
+  updateSelectedTitle();
+  updateLoginStats();
+  renderUserBirthdaySettings();
+  updateBoostBox();
+  updateCollectionMenuCount();
+  updateAlbumMenuCount();
+  unlockEligibleAlbumCards(true);
+  renderAlbum(true);
+  blinkTimer = 3 + Math.floor(Math.random() * 4);
+
+  setInterval(function() {
+    addAffinity(1, true);
+    energyTimer += 1;
+    moodTimer += 1;
+    randomEventTimer += 1;
+    choiceEventTimer += 1;
+    roomVisitorEventTimer += 1;
+
+    if (energyTimer >= 120) {
+      energyTimer = 0;
+      energy = Math.max(0, energy - 1);
+    }
+
+    if (moodTimer >= 120) {
+      moodTimer = 0;
+      mood = Math.max(0, mood - 1);
+    }
+
+    if (temporaryImageTimer > 0) {
+      temporaryImageTimer -= 1;
+      if (temporaryImageTimer <= 0) setSalimImageByStatus();
+    }
+
+    if (roomVisitorTimer > 0) {
+      roomVisitorTimer -= 1;
+      if (roomVisitorTimer <= 0) hideRoomVisitor();
+    }
+
+    updateBlink();
+
+    if (messageLockTimer > 0) messageLockTimer -= 1;
+    if (statusMessageTimer > 0) statusMessageTimer -= 1;
+
+    if (achievementToastTimer > 0) {
+      achievementToastTimer -= 1;
+      if (achievementToastTimer <= 0 && achievementToast) achievementToast.classList.remove("show");
+    }
+
+    if (randomEventTimer >= 90) {
+      randomEventTimer = 0;
+      if (Math.random() < 0.35) triggerRandomEvent();
+    }
+
+    if (choiceEventTimer >= 180) {
+      choiceEventTimer = 0;
+      if (Math.random() < 0.3) showChoiceEvent();
+    }
+
+    if (roomVisitorEventTimer >= 150) {
+      roomVisitorEventTimer = 0;
+      if (Math.random() < 0.28) triggerRoomVisitorEvent();
+    }
+
+    showPendingSalimGiftEvent();
+    updateBoostBox();
+    updateLoginStats();
+    updateScreen();
+  }, 1000);
+
+  updateScreen();
+  if (dailyLoginResult) {
+    window.setTimeout(function() { showLoginBonusPopup(dailyLoginResult); }, 120);
+  } else {
+    window.setTimeout(showPendingSalimGiftEvent, 500);
+  }
+</script>
+</body>
+</html>
