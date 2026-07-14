@@ -1,0 +1,2583 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-title" content="サリムとおでかけ">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/nonoygk/salim/main/ui/icon.jpg">
+<link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/nonoygk/salim/main/ui/icon.jpg">
+<title>サリムとおでかけ 〜ラズレム散策〜</title>
+<style>
+  :root {
+    --navy: #17366f;
+    --navy-light: #345c9d;
+    --gold: #d6b15d;
+    --text: #2d3d62;
+    --muted: #8c8068;
+    --paper: rgba(255,255,255,0.9);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: #F0F8FF;
+    color: var(--text);
+    text-align: center;
+  }
+
+  button, a, .place-card, .souvenir-card, .outing-stage, .modal-overlay {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    border: 1px solid rgba(214,177,93,0.88);
+    border-radius: 999px;
+    margin: 3px;
+    padding: 10px 18px;
+    background: var(--navy);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    box-shadow: 0 3px 7px rgba(23,54,111,0.15);
+  }
+
+  button:active { transform: translateY(1px); }
+  button.secondary { background: rgba(255,255,255,0.96); color: var(--navy); border: 2px solid var(--gold); }
+  button.soft { background: #958b79; border-color: #958b79; }
+
+  .game {
+    width: min(100%, 960px);
+    margin: 0 auto;
+    padding: 14px;
+  }
+
+  .title-card {
+    margin: 0 auto 10px;
+    padding: 2px 8px 9px;
+    width: min(100%, 760px);
+    background: rgba(255,255,255,0.92);
+    border: 2px solid var(--gold);
+    border-radius: 22px;
+    box-shadow: 0 7px 18px rgba(45,61,98,0.12);
+  }
+
+  .title-logo {
+    width: min(100%, 620px);
+    display: block;
+    margin: -8px auto -6px;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--navy);
+    font-size: 25px;
+    line-height: 1.35;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .status-strip {
+    width: min(100%, 760px);
+    margin: 8px auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .status-pill {
+    padding: 7px 8px;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(214,177,93,0.78);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.35;
+    box-shadow: 0 3px 8px rgba(45,61,98,0.05);
+  }
+
+  .outing-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 680px;
+    margin: 10px auto;
+    overflow: hidden;
+    background: #ead8bf center / cover no-repeat;
+    border: 3px solid var(--gold);
+    border-radius: 24px;
+    box-shadow: 0 7px 18px rgba(45,61,98,0.16);
+  }
+
+  .place-view {
+    display: none;
+  }
+
+  .place-view.active {
+    display: block;
+  }
+
+  .outing-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(23,54,111,0.16));
+    pointer-events: none;
+  }
+
+  .place-label {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 3;
+    max-width: 72%;
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.92);
+    border: 2px solid var(--gold);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+
+  .outing-note {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 3;
+    width: min(44%, 330px);
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.88);
+    border: 2px solid rgba(214,177,93,0.82);
+    border-radius: 16px;
+    color: var(--text);
+    font-size: 11px;
+    line-height: 1.55;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+
+  .outing-note-title {
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+
+  .character-area {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .outing-salim,
+  .event-character {
+    position: absolute;
+    bottom: 2%;
+    width: clamp(120px, 24%, 190px);
+    max-width: none;
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.2));
+  }
+
+  .outing-salim {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .event-character {
+    display: none;
+    left: calc(50% + clamp(55px, 8vw, 72px));
+    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.18));
+  }
+
+  .event-character.visible { display: block; }
+
+  .message-box {
+    width: min(100%, 760px);
+    min-height: 112px;
+    margin: 10px auto;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    background: var(--paper);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    line-height: 1.65;
+    white-space: pre-line;
+  }
+
+  .message-title {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .message-main {
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  .message-reward {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .place-grid {
+    width: min(100%, 820px);
+    margin: 10px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .place-card {
+    min-height: 72px;
+    padding: 11px 10px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(214,177,93,0.82);
+    border-radius: 17px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .place-card button {
+    width: 100%;
+    margin: 0;
+    padding: 8px 10px;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .place-card-desc {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .utility-buttons {
+    width: min(100%, 760px);
+    margin: 12px auto 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .souvenir-grid {
+    width: min(100%, 820px);
+    margin: 10px auto 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .souvenir-card {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 9px;
+    padding: 10px 11px;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.06);
+    text-align: left;
+  }
+
+  .souvenir-card.locked { opacity: 0.6; }
+
+  .souvenir-icon {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(240,248,255,0.92);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    font-size: 28px;
+    overflow: hidden;
+  }
+
+  .souvenir-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .souvenir-name {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.35;
+  }
+
+  .souvenir-meta,
+  .souvenir-desc,
+  .souvenir-comment {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .souvenir-comment { color: var(--text); }
+
+  .souvenir-card button {
+    grid-column: 1 / 3;
+    width: 100%;
+    margin: 7px 0 0;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    background: rgba(240,248,255,0.985);
+    text-align: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-window {
+    width: min(100%, 960px);
+    height: 100dvh;
+    max-height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #F0F8FF;
+  }
+
+  .modal-header {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr) 86px;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.96);
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(45,61,98,0.1);
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    color: var(--navy);
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .modal-back {
+    min-width: 0;
+    margin: 0;
+    padding: 8px 9px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .modal-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .viewer-window {
+    width: min(96vw, 620px);
+    height: 100dvh;
+    margin: 0 auto;
+    padding: calc(10px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .viewer-image-wrap {
+    width: min(92vw, 520px);
+    max-height: 76dvh;
+    padding: 8px;
+    background: rgba(255,255,255,0.94);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(45,61,98,0.22);
+  }
+
+  .viewer-image-wrap img {
+    width: 100%;
+    max-height: calc(76dvh - 20px);
+    display: block;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .viewer-title {
+    max-width: min(92vw, 520px);
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(214,177,93,0.8);
+    border-radius: 999px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+
+  .mini-game-button {
+    width: 100%;
+    margin: 7px 0 0;
+    padding: 8px 12px;
+    background: #345c9d;
+    border-color: rgba(214,177,93,0.88);
+    font-size: 12px;
+  }
+
+  .mini-game-panel {
+    width: min(100%, 760px);
+    margin: 8px auto;
+    padding: 12px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .mini-game-status {
+    margin: 0 0 8px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .mini-game-question {
+    margin: 8px 0 10px;
+    padding: 12px;
+    background: rgba(240,248,255,0.85);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    font-size: 14px;
+    white-space: pre-line;
+  }
+
+  .mini-game-choices {
+    display: grid;
+    gap: 8px;
+  }
+
+  .mini-game-choices button {
+    width: 100%;
+    margin: 0;
+    white-space: normal;
+    line-height: 1.45;
+  }
+
+  .memory-game-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .memory-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    padding: 0;
+    border-radius: 16px;
+    border: 2px solid rgba(214,177,93,0.92);
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.35), transparent 40%),
+      linear-gradient(135deg, #17366f, #345c9d);
+    color: #fff7d8;
+    font-size: 25px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.16);
+    overflow: hidden;
+  }
+
+  .memory-card.flipped,
+  .memory-card.matched {
+    background: rgba(255,255,255,0.96);
+  }
+
+  .memory-card.matched {
+    opacity: 0.82;
+  }
+
+  .memory-card img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    padding: 5px;
+  }
+
+  .memory-result-note {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .star-card-game {
+    display: grid;
+    gap: 12px;
+  }
+
+  .star-card-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border: 1px solid rgba(214,177,93,0.78);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #102b5c, #214b8d);
+    color: #fff7d8;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .star-card-score strong {
+    color: #f4cf72;
+    font-size: 17px;
+  }
+
+  .star-card-hint,
+  .star-card-result {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(240,248,255,0.86);
+    border: 1px solid rgba(214,177,93,0.62);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .star-card-hand,
+  .star-card-reveal {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .star-card-reveal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 300px);
+    margin: 0 auto;
+  }
+
+  .star-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 142px;
+    margin: 0;
+    padding: 8px 5px 10px;
+    overflow: hidden;
+    border: 2px solid #e1bd65;
+    border-radius: 15px;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
+      radial-gradient(circle at 77% 25%, rgba(255,255,255,0.2) 0 1px, transparent 2px),
+      radial-gradient(circle at 64% 71%, rgba(255,255,255,0.14) 0 1px, transparent 2px),
+      linear-gradient(145deg, #10275a, #275494 55%, #15366f);
+    color: #fff8dd;
+    box-shadow: inset 0 0 0 3px rgba(255,248,220,0.1), 0 5px 11px rgba(22,48,95,0.2);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+  }
+
+  button.star-card:hover,
+  button.star-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: inset 0 0 0 3px rgba(255,248,220,0.18), 0 9px 16px rgba(22,48,95,0.28), 0 0 12px rgba(231,193,96,0.68);
+    filter: brightness(1.08);
+  }
+
+  .star-card-label {
+    position: relative;
+    z-index: 1;
+    margin-top: 8px;
+    color: #fff4ca;
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+  }
+
+  .star-card-owner {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 4px;
+    color: rgba(255,244,202,0.82);
+    font-size: 10px;
+  }
+
+  .celestial-symbol {
+    position: relative;
+    z-index: 1;
+    width: 58px;
+    height: 58px;
+    flex: 0 0 auto;
+  }
+
+  .celestial-symbol.sun {
+    border-radius: 50%;
+    background: repeating-conic-gradient(from 0deg, #efc45e 0deg 10deg, transparent 10deg 22deg);
+  }
+
+  .celestial-symbol.sun::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff3bb, #e8ae37 70%);
+    box-shadow: 0 0 12px rgba(249,206,90,0.85);
+  }
+
+  .celestial-symbol.moon {
+    overflow: hidden;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff9d3, #e6c16d 72%);
+    box-shadow: 0 0 12px rgba(255,240,174,0.58);
+  }
+
+  .celestial-symbol.moon::after {
+    content: '';
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    top: -5px;
+    left: 18px;
+    border-radius: 50%;
+    background: #1d4786;
+  }
+
+  .celestial-symbol.star {
+    background: linear-gradient(135deg, #fff7c5, #e5b749 65%);
+    clip-path: polygon(50% 0%, 61% 34%, 98% 35%, 68% 56%, 79% 94%, 50% 72%, 21% 94%, 32% 56%, 2% 35%, 39% 34%);
+    filter: drop-shadow(0 0 7px rgba(251,213,105,0.8));
+  }
+
+  .star-card-back {
+    justify-content: center;
+    background:
+      radial-gradient(circle at 22% 18%, #f8dc83 0 1px, transparent 2px),
+      radial-gradient(circle at 77% 25%, #f8dc83 0 1px, transparent 2px),
+      radial-gradient(circle at 64% 71%, #f8dc83 0 1px, transparent 2px),
+      linear-gradient(145deg, #0d2451, #1c437f 55%, #102d61);
+  }
+
+  .star-card-back-mark {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(246,211,116,0.9);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 5px rgba(246,211,116,0.14);
+  }
+
+  .star-card-back-mark::before,
+  .star-card-back-mark::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 28px;
+    height: 2px;
+    background: #f6d374;
+    transform: translate(-50%, -50%);
+  }
+
+  .star-card-back-mark::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+
+
+
+  /* garden growing mini game */
+  .garden-panel {
+    width: min(100%, 760px);
+    margin: 8px auto;
+    padding: 12px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.08);
+  }
+
+  .garden-status {
+    margin: 0 0 8px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.55;
+  }
+
+  .garden-scene {
+    position: relative;
+    width: min(100%, 430px);
+    margin: 0 auto 10px;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    background: #ead8bf center / cover no-repeat;
+    border: 2px solid rgba(214,177,93,0.85);
+    border-radius: 18px;
+    box-shadow: inset 0 -40px 70px rgba(23,54,111,0.08);
+  }
+
+  .garden-plot-image {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    width: 76%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .garden-caption {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    width: min(88%, 340px);
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(214,177,93,0.85);
+    border-radius: 16px;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.55;
+  }
+
+  .garden-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .garden-actions button {
+    min-width: 128px;
+    margin: 0;
+    padding: 10px 14px;
+  }
+
+  .garden-log {
+    margin-top: 9px;
+    padding: 10px;
+    background: rgba(240,248,255,0.85);
+    border: 1px solid rgba(214,177,93,0.72);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  /* compact map sizing fix */
+  .map-panel {
+    width: min(100%, 760px);
+    margin: 10px auto;
+    padding: 8px;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid var(--gold);
+    border-radius: 22px;
+    box-shadow: 0 7px 18px rgba(45,61,98,0.12);
+    text-align: center;
+  }
+
+  .map-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 2px solid rgba(214,177,93,0.8);
+    border-radius: 16px;
+    background: #ead8bf;
+  }
+
+  .map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .map-buttons {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .map-pin {
+    position: absolute;
+    min-width: 70px;
+    max-width: 118px;
+    margin: 0;
+    padding: 5px 7px;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid var(--gold);
+    color: var(--navy);
+    font-size: 9px;
+    line-height: 1.2;
+    box-shadow: 0 3px 8px rgba(45,61,98,0.18);
+  }
+
+  .map-pin.selected {
+    background: var(--navy);
+    color: white;
+  }
+
+
+  /* map button and action layout polish */
+  .map-pin {
+    min-width: 86px;
+    max-width: 138px;
+    min-height: 44px;
+    padding: 7px 10px;
+    background: var(--navy);
+    color: #ffffff;
+    border: 2px solid rgba(214,177,93,0.95);
+    font-size: 10px;
+    line-height: 1.2;
+    box-shadow: 0 4px 10px rgba(45,61,98,0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .map-pin.selected {
+    background: var(--navy);
+    color: #ffffff;
+  }
+
+  .selected-place-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .selected-place-actions button {
+    width: 42%;
+    max-width: 170px;
+    min-width: 116px;
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .selected-place-actions .mini-game-button {
+    width: 42%;
+    max-width: 170px;
+    min-width: 116px;
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 14px;
+    background: var(--navy);
+  }
+
+  /* no selected color change */
+  .map-pin.selected {
+    background: var(--navy);
+    color: #ffffff;
+  }
+
+  @media (max-width: 600px) {
+    .game { padding: 7px; }
+    h1 { font-size: 20px; }
+    .title-card { padding: 0 6px 7px; }
+    .title-logo { width: 100%; max-width: 100%; margin: -4px auto -4px; }
+    .subtitle { font-size: 11px; }
+    .status-strip { gap: 5px; }
+    .status-pill { padding: 6px 5px; font-size: 10px; }
+    .outing-stage { border-radius: 18px; }
+    .place-label { top: 8px; left: 8px; font-size: 10px; padding: 5px 9px; }
+    .outing-note { top: 8px; right: 8px; width: min(46%, 230px); padding: 6px 8px; font-size: 9px; border-radius: 12px; }
+    .outing-note-title { font-size: 10px; margin-bottom: 1px; }
+    .outing-salim,
+    .event-character { width: clamp(115px, 28%, 170px); bottom: 1.5%; }
+    .event-character { left: calc(50% + clamp(52px, 8vw, 68px)); }
+    .message-box { min-height: 92px; padding: 10px 12px; }
+    .message-title { font-size: 11px; }
+    .message-main { font-size: 13px; }
+    .message-reward { font-size: 10px; }
+    .place-grid { grid-template-columns: 1fr; gap: 6px; }
+    .place-card { min-height: 0; padding: 7px; border-radius: 13px; }
+    .place-card button { font-size: 12px; }
+    .mini-game-button { font-size: 10px; padding: 7px 10px; }
+    .place-card-desc { font-size: 9px; }
+    .map-panel { padding: 7px; border-radius: 18px; }
+    .map-wrap { width: 100%; max-width: 100%; border-radius: 14px; }
+    .selected-place-panel { margin-top: 7px; padding: 8px; border-radius: 13px; }
+    .selected-place-title { font-size: 12px; }
+    .selected-place-desc { font-size: 9px; margin-bottom: 7px; }
+    .selected-place-actions button { min-width: 96px; }
+    .mini-game-panel { padding: 9px; border-radius: 15px; }
+    .mini-game-status { font-size: 11px; }
+    .mini-game-question { padding: 9px; font-size: 12px; }
+    .memory-game-board { gap: 6px; }
+    .memory-card { border-radius: 12px; font-size: 20px; }
+    .memory-card img { padding: 3px; }
+    .star-card-game { gap: 9px; }
+    .star-card-score { padding: 8px; font-size: 11px; }
+    .star-card-hint, .star-card-result { padding: 9px; font-size: 11px; }
+    .star-card-hand, .star-card-reveal { gap: 6px; }
+    .star-card { min-height: 116px; border-radius: 12px; }
+    .celestial-symbol { width: 47px; height: 47px; }
+    .celestial-symbol.sun::after { inset: 10px; }
+    .celestial-symbol.moon::after { width: 44px; height: 44px; left: 15px; }
+    .star-card-label { margin-top: 6px; font-size: 11px; }
+    .star-card-owner { font-size: 9px; }
+
+
+    .garden-panel { padding: 9px; border-radius: 15px; }
+    .garden-status { font-size: 11px; }
+    .garden-scene { width: min(100%, 360px); border-radius: 15px; }
+    .garden-plot-image { width: 78%; bottom: 4%; }
+    .garden-caption { font-size: 10px; padding: 6px 8px; border-radius: 13px; }
+    .garden-actions { gap: 6px; }
+    .garden-actions button { min-width: 104px; padding: 9px 10px; font-size: 12px; }
+    .garden-log { font-size: 10px; padding: 8px; }
+
+    .map-pin {
+      min-width: 72px;
+      max-width: 116px;
+      padding: 6px 8px;
+      font-size: 9px;
+      border-width: 2px;
+    }
+    .selected-place-actions {
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+    .selected-place-actions button,
+    .selected-place-actions .mini-game-button {
+      width: 46%;
+      min-width: 0;
+      max-width: none;
+      padding: 9px 8px;
+      font-size: 12px;
+    }
+    button { padding: 8px 13px; font-size: 12px; }
+    .souvenir-grid { grid-template-columns: 1fr; gap: 6px; }
+    .souvenir-card { grid-template-columns: 52px minmax(0,1fr); gap: 7px; padding: 8px 9px; border-radius: 12px; }
+    .souvenir-icon { width: 50px; height: 50px; border-radius: 12px; font-size: 22px; }
+    .souvenir-name { font-size: 11px; }
+    .souvenir-meta, .souvenir-desc, .souvenir-comment { font-size: 9px; }
+    .modal-header { grid-template-columns: 74px minmax(0,1fr) 74px; padding: 8px 9px; }
+    .modal-header h2 { font-size: 16px; }
+    .modal-back { padding: 7px 7px; font-size: 11px; }
+    .modal-scroll { padding: 9px 7px calc(14px + env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+<div class="game">
+  <div class="title-card">
+    <img
+      class="title-logo"
+      src="https://raw.githubusercontent.com/nonoygk/salim/main/outing/outing-title.png"
+      alt="サリムとおでかけ"
+    >
+    <p class="subtitle">ラズレムの街を、サリムと一緒に歩いてみよう。</p>
+  </div>
+
+  <div class="status-strip">
+    <div class="status-pill" id="levelBox">Lv.1｜王宮を訪れた客人</div>
+    <div class="status-pill">おでかけ：<span id="outingCountText">0</span>回</div>
+    <div class="status-pill">お土産：<span id="souvenirCountText">0 / 2</span></div>
+  </div>
+
+  <div class="map-panel" id="mapPanel">
+    <div class="map-wrap">
+      <img
+        class="map-image"
+        src="https://raw.githubusercontent.com/nonoygk/salim/main/outing/map.jpg"
+        alt="ラズレムおでかけマップ"
+      >
+      <div class="map-buttons" id="placeGrid"></div>
+    </div>
+  </div>
+
+  <div class="place-view" id="placeView">
+    <button class="secondary map-back-button" type="button" onclick="showMapScreen()">← マップに戻る</button>
+
+    <div class="outing-stage" id="outingStage">
+      <div class="place-label" id="placeLabel">行き先を選んでください</div>
+      <div class="outing-note" id="outingNote">
+        <div class="outing-note-title">🗺️ 散策メモ</div>
+        <div id="outingNoteText">行き先を選ぶと、その場所の見どころが表示されます。</div>
+      </div>
+      <div class="character-area">
+        <img class="event-character" id="eventCharacter" src="" alt="">
+        <img class="outing-salim" src="https://raw.githubusercontent.com/nonoygk/salim/main/characters/salim-normal.png" alt="ちびサリム">
+      </div>
+    </div>
+
+    <div class="selected-place-panel" id="selectedPlacePanel"></div>
+
+    <div class="message-box">
+      <div class="message-title" id="messageTitle">ラズレム散策マップ</div>
+      <div class="message-main" id="messageMain">「さて、どこへ行きたい？　俺が案内してやる」</div>
+      <div class="message-reward" id="messageReward">場所を選ぶと、イベントやお土産入手が発生します。</div>
+    </div>
+  </div>
+
+  <div class="utility-buttons">
+    <button type="button" onclick="openSouvenirMenu()">🎁 お土産一覧</button>
+    <button class="secondary" type="button" onclick="location.href='index.html'">🏠 お部屋に戻る</button>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="miniGameMenu" aria-hidden="true" onclick="closeModalFromBackdrop(event, 'miniGameMenu')">
+  <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="miniGameTitle">
+    <div class="modal-header">
+      <button class="modal-back" type="button" onclick="closeModal('miniGameMenu')">← 戻る</button>
+      <h2 id="miniGameTitle">ミニゲーム</h2>
+      <div></div>
+    </div>
+    <div class="modal-scroll">
+      <div class="mini-game-panel">
+        <div class="mini-game-status" id="miniGameStatus">準備中</div>
+        <div class="mini-game-question" id="miniGameQuestion"></div>
+        <div class="mini-game-choices" id="miniGameChoices"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="gardenGameMenu" aria-hidden="true" onclick="closeModalFromBackdrop(event, 'gardenGameMenu')">
+  <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="gardenGameTitle">
+    <div class="modal-header">
+      <button class="modal-back" type="button" onclick="closeModal('gardenGameMenu')">← 戻る</button>
+      <h2 id="gardenGameTitle">🌱 王宮前庭園の花壇</h2>
+      <div></div>
+    </div>
+    <div class="modal-scroll">
+      <div class="garden-panel">
+        <div class="garden-status" id="gardenStatus">花壇の様子を見ています。</div>
+        <div class="garden-scene" id="gardenScene">
+          <div class="garden-caption" id="gardenCaption">王宮前庭園の片隅に、小さな花壇があります。</div>
+          <img class="garden-plot-image" id="gardenPlotImage" src="" alt="王宮前庭園の花壇">
+        </div>
+        <div class="garden-actions" id="gardenActions"></div>
+        <div class="garden-log" id="gardenLog">サリム「ここなら、庭師たちの邪魔にもならないだろ。月白花を育ててみるか？」</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="souvenirMenu" aria-hidden="true" onclick="closeModalFromBackdrop(event, 'souvenirMenu')">
+  <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="souvenirMenuTitle">
+    <div class="modal-header">
+      <button class="modal-back" type="button" onclick="closeModal('souvenirMenu')">← 戻る</button>
+      <h2 id="souvenirMenuTitle">🎁 おでかけのお土産</h2>
+      <div></div>
+    </div>
+    <div class="modal-scroll">
+      <div class="status-pill" id="souvenirSummary">集めたお土産：0 / 10</div>
+      <div class="souvenir-grid" id="souvenirGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="souvenirViewer" aria-hidden="true" onclick="closeModalFromBackdrop(event, 'souvenirViewer')">
+  <div class="viewer-window" role="dialog" aria-modal="true" aria-labelledby="viewerTitle">
+    <div class="viewer-title" id="viewerTitle">お土産</div>
+    <div class="viewer-image-wrap">
+      <img id="viewerImage" src="" alt="">
+    </div>
+    <button type="button" onclick="closeModal('souvenirViewer')">一覧に戻る</button>
+  </div>
+</div>
+
+<script>
+  const STORAGE_PREFIX = "salimRoomPrototype_v1_";
+  const LEVEL_GROWTH_BASE = 1000;
+  const BASE_URL = "https://raw.githubusercontent.com/nonoygk/salim/main/";
+
+  const CHARACTER_IMAGES = {
+    farid: BASE_URL + "characters/farid-chibi.png",
+    sara: BASE_URL + "characters/sara-chibi.png"
+  };
+
+  const GARDEN_IMAGES = {
+    background: BASE_URL + "outing/garden-bg.png",
+    dry: BASE_URL + "outing/garden-plot-dry.png",
+    wet: BASE_URL + "outing/garden-plot-wet.png",
+    sprout: BASE_URL + "outing/garden-plot-sprout.png",
+    growing: BASE_URL + "outing/garden-plot-growing.png",
+    bud: BASE_URL + "outing/garden-plot-bud.png",
+    bloomWhite: BASE_URL + "outing/garden-plot-bloom-white.png"
+  };
+
+  const GARDEN_STAGES = [
+    { key: "dry", label: "空の花壇", action: "種をまく", caption: "乾いた花壇です。まずは種をまきましょう。" },
+    { key: "wet", label: "種まき後", action: "水やり", caption: "月白花の種をまきました。水やりをしながら、ゆっくり育てましょう。" },
+    { key: "sprout", label: "芽が出たばかり", action: "水やり", caption: "月白花の小さな芽が顔を出しました。やさしく水をあげましょう。" },
+    { key: "growing", label: "成長中", action: "水やり", caption: "葉が増えて、少しずつ大きくなっています。" },
+    { key: "bud", label: "つぼみ", action: "水やり", caption: "月白花のつぼみがつきました。開花までもう少しです。" },
+    { key: "bloomWhite", label: "開花", action: "収穫する", caption: "月白花が咲きました。今なら収穫できます。" }
+  ];
+
+
+  const PLACES = [
+    {
+      id: "palaceGarden",
+      name: "フィルダール宮・王宮前庭園",
+      shortName: "王宮前庭園",
+      image: BASE_URL + "outing/outing-palace-garden.png",
+      desc: "白い石と金装飾、泉と花が美しい王宮の一般開放区域。",
+      miniNote: "見どころ：泉と花壇。サラと出会いやすい場所です。",
+      character: "sara",
+      normalLines: [
+        "ここは王宮前庭園だ。観光客も多いが、静かで悪くないだろ",
+        "この庭は民にも旅人にも開かれている。綺麗なものを独り占めするのは、もったいないからな",
+        "花の手入れが行き届いてるだろ。ここの庭師たちは腕がいい"
+      ],
+      loverLines: [
+        "……本当は、ずっと前からお前をここに連れてきたかった。綺麗なものは、好きな相手に見せたくなるものだろ",
+        "この庭を誰かと歩くなら、お前がいいと思っていた",
+        "人が多いな。……手を貸せ。王宮の前で迷子にさせるわけにはいかないからな"
+      ],
+      eventLines: [
+        "泉のそばで、涼しい風が吹き抜けた。サリムは少し目を細めて、庭の奥を眺めている。",
+        "観光客が楽しそうに庭を歩いている。サリムはそれを見て、どこか誇らしげに笑った。",
+        "花壇の前で足を止めると、サリムが花の名前をひとつ教えてくれた。"
+      ]
+    },
+    {
+      id: "market",
+      name: "中央大市場",
+      shortName: "中央大市場",
+      image: BASE_URL + "outing/outing-market.png",
+      desc: "香辛料、絹、宝石、香油、異国の品々が並ぶにぎやかな大市場。",
+      miniNote: "見どころ：屋台と布飾り。ファリドが通りかかることがあります。",
+      character: "farid",
+      normalLines: [
+        "市場は人が多い。迷子になるなよ。……まあ、迷ったら俺が見つけてやるけどな",
+        "ここはラズレムで一番賑やかな場所だ。何を見ても飽きないだろ",
+        "香辛料の匂いがするな。腹が減ってきたんじゃないか？"
+      ],
+      loverLines: [
+        "手、貸せ。人混みで離れるのは面白くない。……俺が、な",
+        "お前が目を輝かせていると、つい何でも買ってやりたくなるな",
+        "はぐれるなよ。……いや、少しはぐれて、俺が探しに行くのも悪くないか"
+      ],
+      eventLines: [
+        "屋台の呼び声と楽師の音色が混ざり合い、市場全体が明るく揺れている。",
+        "サリムが店主と短く言葉を交わす。店主は何かを察したように、ただ穏やかに笑った。",
+        "色とりどりの布が風に揺れる。サリムはあなたの歩幅に合わせて、少しゆっくり歩いた。"
+      ]
+    },
+    {
+      id: "perfumeStreet",
+      name: "香油通り",
+      shortName: "香油通り",
+      image: BASE_URL + "outing/outing-perfume-street.png",
+      desc: "香油や香水、香木を扱う専門店が軒を連ねる通り。",
+      miniNote: "見どころ：香油店と練り香。恋人向けの品をすすめられることも。",
+      character: "sara",
+      normalLines: [
+        "香りは面白いぞ。好みが出る。……お前は、どんな香りが好きなんだ？",
+        "この通りを歩くと、空気まで変わるだろ",
+        "店主たちは客を見る目がいい。下手な嘘は、香りより早く見抜かれるかもな"
+      ],
+      loverLines: [
+        "この香り、夜向けらしい。……ははっ、そんな顔するな。半分は冗談だ",
+        "お前に似合う香りを選ぶのは、案外楽しいな",
+        "甘すぎない香りがいい。お前のそばにいる時、ふと気づくくらいがちょうどいい"
+      ],
+      eventLines: [
+        "老舗の香油店の前で、店主が意味ありげに微笑んだ。サリムはそれを見て、軽く肩をすくめる。",
+        "甘く濃厚な香りと、爽やかな柑橘の香りが交互に流れてくる。",
+        "小さな香炉から白い煙が立ちのぼる。サリムは冗談めかして、あなたの反応をうかがった。"
+      ]
+    },
+    {
+      id: "waterMirror",
+      name: "水鏡の回廊",
+      shortName: "水鏡の回廊",
+      image: BASE_URL + "outing/outing-water-mirror-corridor.png",
+      desc: "王都の水路沿いにある、静かな石造りの回廊。夜は水面に灯りと星が映る。",
+      character: "sara",
+      normalLines: [
+        "ここは少し静かだな。市場の後だと、余計にそう感じる",
+        "水の音があると、砂漠の都でも涼しく感じるだろ",
+        "急がなくていい。こういう場所は、ゆっくり歩く方がいい"
+      ],
+      loverLines: [
+        "水面に映る灯りより、お前の顔を見ていたい。……今のは冗談じゃないぞ",
+        "お前と歩くなら、こういう静かな場所がいい",
+        "ここに来る恋人たちの気持ちが、少し分かった気がする"
+      ],
+      eventLines: [
+        "水面に灯りが揺れ、回廊の影が静かに伸びている。サリムの声も、自然と少し低くなった。",
+        "水路沿いを歩く人々は、誰も大きな声を出さない。穏やかな時間だけが流れている。",
+        "小さな橋の上で立ち止まると、星の光が水面にまたたいた。"
+      ]
+    },
+    {
+      id: "starryHill",
+      name: "星見の丘",
+      shortName: "星見の丘",
+      image: BASE_URL + "outing/outing-starry-hill.png",
+      desc: "王都郊外の小高い丘。夜になると恋人たちが星空を眺める名所。",
+      miniNote: "見どころ：王都を見下ろす星空。恋人以上ではデート気分に。",
+      character: "farid",
+      normalLines: [
+        "ここは夜がいい。ラズレムの星は、見慣れていても飽きない",
+        "少し歩くが、その分だけ景色はいい。来て損はないだろ",
+        "王都を少し離れるだけで、空が広く見えるんだ"
+      ],
+      loverLines: [
+        "……星を見るたびに、今夜のことを思い出す気がする。お前も、そうならいい",
+        "お前にも見せたかったんだ。この国の、俺が好きな景色を",
+        "こういう場所に二人で来ると、まるで逢瀬のようだな"
+      ],
+      eventLines: [
+        "丘の上から、灯りのともる王都が見える。サリムはしばらく黙って、その景色を見下ろした。",
+        "夜風が髪を揺らす。サリムはあなたの隣で、珍しく静かに星を見上げている。",
+        "遠くで小さな笑い声が聞こえる。恋人たちが、星の下で語り合っているようだ。"
+      ]
+    }
+  ];
+
+  const MAP_POSITIONS = {
+    palaceGarden: { left: 50, top: 30 },
+    market: { left: 49, top: 80 },
+    perfumeStreet: { left: 50, top: 60 },
+    waterMirror: { left: 77, top: 66 },
+    starryHill: { left: 77, top: 21 }
+  };
+
+  const SOUVENIRS = [
+    {
+      id: "palaceFlowerBookmark",
+      name: "王宮庭園の月白花押し栞",
+      placeId: "palaceGarden",
+      placeName: "フィルダール宮・王宮前庭園",
+      image: BASE_URL + "outing/souvenir-palace-flower-bookmark.png",
+      description: "王宮庭園の月白花を閉じ込めた、上品な押し花の栞。",
+      comment: "庭の花を気に入ったなら、これを持って帰るといい"
+    },
+    {
+      id: "palaceMedal",
+      name: "フィルダール宮の小さな記念章",
+      placeId: "palaceGarden",
+      placeName: "フィルダール宮・王宮前庭園",
+      image: BASE_URL + "outing/souvenir-palace-medal.png",
+      description: "フィルダール宮を模した、青と金の小さな記念章。",
+      comment: "旅の記念にはちょうどいいだろ。……少し派手か？"
+    },
+    {
+      id: "spiceWrap",
+      name: "彩り香辛料包み",
+      placeId: "market",
+      placeName: "中央大市場",
+      image: BASE_URL + "outing/souvenir-spice-wrap.png",
+      description: "市場で人気の香辛料を詰めた、青と金の布包み。",
+      comment: "料理に使ってもいいが、香りだけでもラズレムを思い出せる"
+    },
+    {
+      id: "wovenCharm",
+      name: "ラズレム織りの布飾り",
+      placeId: "market",
+      placeName: "中央大市場",
+      image: BASE_URL + "outing/souvenir-woven-charm.png",
+      description: "青と金の刺繍が美しい、ラズレム織りの布飾り。",
+      comment: "その色、お前に似合うと思ってな"
+    },
+    {
+      id: "starIncense",
+      name: "星香の練り香",
+      placeId: "perfumeStreet",
+      placeName: "香油通り",
+      image: BASE_URL + "outing/souvenir-star-incense.png",
+      description: "星空を思わせる装飾ケースに入った、穏やかな香りの練り香。",
+      comment: "眠る前に使うといい。悪い夢くらいなら、遠ざけてくれるかもな"
+    },
+    {
+      id: "blueMoonOil",
+      name: "青月香の香油瓶",
+      placeId: "perfumeStreet",
+      placeName: "香油通り",
+      image: BASE_URL + "outing/souvenir-blue-moon-oil.png",
+      description: "夜向けの少し大人っぽい香りを閉じ込めた、青い香油瓶。",
+      comment: "この香りは……まあ、二人きりの時にでも試せばいい"
+    },
+    {
+      id: "waterGlassCharm",
+      name: "水鏡の青い硝子飾り",
+      placeId: "waterMirror",
+      placeName: "水鏡の回廊",
+      image: BASE_URL + "outing/souvenir-water-glass-charm.png",
+      description: "水面に映る夜景を閉じ込めたような、青い硝子の飾り。",
+      comment: "水鏡の回廊らしい土産だな。光にかざすと綺麗だ"
+    },
+    {
+      id: "lampStoneCarving",
+      name: "灯映りの小さな石細工",
+      placeId: "waterMirror",
+      placeName: "水鏡の回廊",
+      image: BASE_URL + "outing/souvenir-lamp-stone-carving.png",
+      description: "灯火と水路をかたどった、手のひらサイズの石細工。",
+      comment: "職人の仕事だな。小さいが、よくできている"
+    },
+    {
+      id: "starSandBottle",
+      name: "星砂の小瓶",
+      placeId: "starryHill",
+      placeName: "星見の丘",
+      image: BASE_URL + "outing/souvenir-star-sand-bottle.png",
+      description: "星見の丘で手に入る、夜空のようにきらめく砂の小瓶。",
+      comment: "星を持って帰る、なんてな。悪くないだろ"
+    },
+    {
+      id: "nightBlueRibbon",
+      name: "夜風の青いリボン",
+      placeId: "starryHill",
+      placeName: "星見の丘",
+      image: BASE_URL + "outing/souvenir-night-blue-ribbon.png",
+      description: "夜風に揺れる星空を思わせる、深い青のリボン。",
+      comment: "星の下で見ると、もっと綺麗に見えるかもしれないな"
+    }
+  ];
+
+  const CHARACTER_EVENTS = {
+    farid: {
+      name: "ファリド",
+      image: CHARACTER_IMAGES.farid,
+      eventTitle: "ファリドとの掛け合い",
+      lines: [
+        "ファリドはサリムを見て、小さく息をついた。\n「陛下……また街歩きですか。お探しするこちらの身にもなってください」\n「ははっ、固いことを言うな、ファリド。お前も少しは息抜きした方がいいぞ」",
+        "ファリドが書類を抱えたまま、深く一礼した。\n「陛下、確認していただきたい書簡が山ほどございます」\n「その山は逃げないだろ。今はこいつの案内が先だ」\nファリドは何か言いたげに口を閉じた。",
+        "ファリドがあなたに丁寧に会釈した。\n「陛下がご迷惑をおかけしていませんか」\n「おい、迷惑前提で話すな」\n「日頃の行いでございます、陛下」",
+        "ファリドはサリムの顔を見るなり、静かに眉を寄せた。\n「陛下。せめて行き先だけでもお知らせください」\n「そう心配するな。こいつもいるし、俺は楽しくやっている」"
+      ],
+      loverLines: [
+        "ファリドは二人の距離に気づき、すぐに視線を伏せた。\n「……陛下。お邪魔いたしました」\n「別に邪魔じゃない。お前も少し歩いていけ」\n「いえ。今は空気を読むべき時かと」",
+        "ファリドがあなたに深く一礼した。\n「陛下のことを、どうぞよろしくお願いいたします」\n「ファリド、俺を子どもみたいに言うな」\n「時々、子どもより手がかかりますので」",
+        "ファリドは穏やかに目を伏せた。\n「陛下がこのように息を抜ける時間は、貴重です」\n「分かっているなら、お前も休め。お前が倒れたら俺が困る」\n「……そのお言葉だけ、ありがたく頂戴します」"
+      ]
+    },
+    sara: {
+      name: "サラ",
+      image: CHARACTER_IMAGES.sara,
+      eventTitle: "サラとの掛け合い",
+      lines: [
+        "サラが柔らかく微笑んで、あなたに会釈した。\n「陛下とご一緒でしたか。楽しそうで何よりです」\n「サラ、いつもありがとな。こいつが緊張しないよう、色々気を配ってくれてるだろ」\n「いえ。お二人が穏やかに過ごされるなら、それが一番です」",
+        "サラが涼しげな布を差し出した。\n「陛下、日差しが強うございます。あなた様も、どうぞご無理なさらず」\n「助かる。サラは本当に気が利くな」\n「陛下が少し自由すぎるだけでございます」",
+        "サラはサリムとあなたを見て、穏やかに微笑んだ。\n「仲が良くて何よりです」\n「ははっ、そう見えるか？」\n「はい。陛下のお顔が、いつもより柔らかく見えます」",
+        "サラがそっと道の先を示した。\n「この先は少し静かです。お二人で歩かれるには良い場所かと」\n「サラ、いつもありがとな」\n「陛下とあなた様のお役に立てるなら、嬉しゅうございます」"
+      ],
+      loverLines: [
+        "サラは二人の空気を察したように、控えめに微笑んだ。\n「仲が良くて何よりです。どうぞ、ごゆっくりお過ごしください」\n「サラ、気を遣わせたな」\n「いいえ。陛下が幸せそうで、私も嬉しゅうございます」",
+        "サラがあなたに小さく微笑んだ。\n「陛下があんなに穏やかなお顔をなさるのは、きっとあなた様のおかげですね」\n「……サラ、そういうことを本人の前で言うな」\n「失礼いたしました。ですが、本当のことでございます」",
+        "サラは少し離れた場所で一礼した。\n「お二人とも、よいお時間をお過ごしください」\n「サラ、いつもありがとな。お前の支えに助けられている」\n「そのお言葉だけで十分でございます」"
+      ]
+    }
+  };
+
+  const STAR_CARDS = [
+    {
+      id: "sun",
+      name: "太陽",
+      beats: "star",
+      hint: "サリム「今夜は太陽の話でもしようか。昼の熱も、悪いものじゃないだろ？」"
+    },
+    {
+      id: "moon",
+      name: "月",
+      beats: "sun",
+      hint: "サリム「今夜は月がよく見えるな。……さて、これはただの感想かな？」"
+    },
+    {
+      id: "star",
+      name: "星",
+      beats: "moon",
+      hint: "サリム「見上げてみろ。星がずいぶん綺麗だ。……この意味、分かるか？」"
+    }
+  ];
+
+
+  const MINI_GAMES = {
+    perfumeStreet: {
+      type: "memory",
+      title: "香油通りの絵合わせ",
+      placeId: "perfumeStreet",
+      handLimit: 8,
+      intro: "香りの品をそろえて、お土産を見つけよう。8手以内にすべてそろえると成功です。",
+      successLine: "「いい記憶力だな。香りの品も、ちゃんと見分けられている」",
+      slowClearLine: "「最後までそろえたな。少し時間はかかったが、悪くない」",
+      cardSouvenirIds: ["starIncense", "blueMoonOil", "waterGlassCharm", "starSandBottle"]
+    },
+    starryHill: {
+      type: "starCards",
+      title: "星見の丘・星巡り札",
+      placeId: "starryHill",
+      intro: "太陽・月・星の札で、サリムと勝負しよう。先に2勝した方の勝ちです。",
+      successLine: "「お前、案外こういう駆け引きが得意なんだな。……次は俺も、もう少し本気でいこうか」",
+      failLine: "「勝ち負けなんて、今夜は大したことじゃない。もう一回やるか？」"
+    }
+  };
+
+  const IMPLEMENTED_SOUVENIR_IDS = {
+    palaceFlowerBookmark: true,
+    starIncense: true,
+    blueMoonOil: true,
+    starSandBottle: true,
+    nightBlueRibbon: true
+  };
+
+  function isSouvenirImplemented(souvenirId) {
+    return Boolean(IMPLEMENTED_SOUVENIR_IDS[souvenirId]);
+  }
+
+  let currentMiniGame = null;
+  let gardenStage = loadNumber("gardenStage", 0);
+  let gardenHarvestCount = loadNumber("gardenHarvestCount", 0);
+  let gardenWaterCount = loadNumber("gardenWaterCount", 0);
+  let gardenCareDays = loadNumber("gardenCareDays", 0);
+  let gardenLastWaterDate = loadText("gardenLastWaterDate", "");
+
+  let affinity = loadNumber("affinity", 0);
+  let totalAffinityEarned = loadNumber("totalAffinityEarned", affinity);
+  let outingCount = loadNumber("outingCount", 0);
+  let visitedPlaces = loadJSON("outingVisitedPlaces", {});
+  let ownedSouvenirs = loadJSON("outingSouvenirs", {});
+  let souvenirDates = loadJSON("outingSouvenirDates", {});
+  let eventHistory = loadJSON("outingEventHistory", []);
+  let lastPlace = loadText("outingLastPlace", "");
+  let selectedPlaceId = lastPlace || "palaceGarden";
+
+  const placeGrid = document.getElementById("placeGrid");
+  const mapPanel = document.getElementById("mapPanel");
+  const placeView = document.getElementById("placeView");
+  const selectedPlacePanel = document.getElementById("selectedPlacePanel");
+  const outingStage = document.getElementById("outingStage");
+  const placeLabel = document.getElementById("placeLabel");
+  const eventCharacter = document.getElementById("eventCharacter");
+  const outingNoteText = document.getElementById("outingNoteText");
+  const messageTitle = document.getElementById("messageTitle");
+  const messageMain = document.getElementById("messageMain");
+  const messageReward = document.getElementById("messageReward");
+  const levelBox = document.getElementById("levelBox");
+  const outingCountText = document.getElementById("outingCountText");
+  const souvenirCountText = document.getElementById("souvenirCountText");
+  const souvenirSummary = document.getElementById("souvenirSummary");
+  const souvenirGrid = document.getElementById("souvenirGrid");
+  const viewerTitle = document.getElementById("viewerTitle");
+  const viewerImage = document.getElementById("viewerImage");
+  const miniGameTitle = document.getElementById("miniGameTitle");
+  const miniGameStatus = document.getElementById("miniGameStatus");
+  const miniGameQuestion = document.getElementById("miniGameQuestion");
+  const miniGameChoices = document.getElementById("miniGameChoices");
+  const gardenScene = document.getElementById("gardenScene");
+  const gardenPlotImage = document.getElementById("gardenPlotImage");
+  const gardenStatus = document.getElementById("gardenStatus");
+  const gardenCaption = document.getElementById("gardenCaption");
+  const gardenActions = document.getElementById("gardenActions");
+  const gardenLog = document.getElementById("gardenLog");
+
+  function storageKey(name) { return STORAGE_PREFIX + name; }
+
+  function loadNumber(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    if (saved === null) return fallback;
+    const value = Number(saved);
+    return Number.isFinite(value) ? value : fallback;
+  }
+
+  function loadText(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    return saved === null ? fallback : saved;
+  }
+
+  function loadJSON(name, fallback) {
+    const saved = localStorage.getItem(storageKey(name));
+    if (saved === null) return fallback;
+    try {
+      const value = JSON.parse(saved);
+      return value && typeof value === "object" ? value : fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function saveOutingData() {
+    localStorage.setItem(storageKey("affinity"), affinity);
+    localStorage.setItem(storageKey("totalAffinityEarned"), totalAffinityEarned);
+    localStorage.setItem(storageKey("outingCount"), outingCount);
+    localStorage.setItem(storageKey("outingVisitedPlaces"), JSON.stringify(visitedPlaces));
+    localStorage.setItem(storageKey("outingSouvenirs"), JSON.stringify(ownedSouvenirs));
+    localStorage.setItem(storageKey("outingSouvenirDates"), JSON.stringify(souvenirDates));
+    localStorage.setItem(storageKey("outingLastPlace"), lastPlace);
+    localStorage.setItem(storageKey("outingEventHistory"), JSON.stringify(eventHistory.slice(-30)));
+    localStorage.setItem(storageKey("gardenStage"), gardenStage);
+    localStorage.setItem(storageKey("gardenHarvestCount"), gardenHarvestCount);
+    localStorage.setItem(storageKey("gardenWaterCount"), gardenWaterCount);
+    localStorage.setItem(storageKey("gardenCareDays"), gardenCareDays);
+    localStorage.setItem(storageKey("gardenLastWaterDate"), gardenLastWaterDate);
+    localStorage.setItem(storageKey("lastSave"), Date.now());
+  }
+
+  function getLevel() {
+    return Math.floor(Math.sqrt(totalAffinityEarned / LEVEL_GROWTH_BASE)) + 1;
+  }
+
+  function getRelationshipName(level) {
+    if (level >= 1000) return "唯一無二の伴侶";
+    if (level >= 500) return "最愛の人";
+    if (level >= 250) return "恋人";
+    if (level >= 100) return "大切な存在";
+    if (level >= 50) return "心惹かれる相手";
+    if (level >= 25) return "親しい友人";
+    if (level >= 10) return "顔なじみ";
+    return "王宮を訪れた客人";
+  }
+
+  function isLoverLevel() {
+    return getLevel() >= 75;
+  }
+
+  function pickRandom(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function getLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return year + "-" + month + "-" + day;
+  }
+
+  function formatNumber(value) {
+    value = Math.floor(Number(value) || 0);
+    if (value < 10000000) return String(value);
+    if (value >= 100000000) return Math.floor(value / 100000000) + "億";
+    return Math.floor(value / 10000) + "万";
+  }
+
+  function getPlaceById(placeId) {
+    return PLACES.find(function(item) { return item.id === placeId; }) || null;
+  }
+
+  function getSouvenirsByPlace(placeId) {
+    return SOUVENIRS.filter(function(item) { return item.placeId === placeId; });
+  }
+
+  function getOwnedSouvenirCount() {
+    return SOUVENIRS.filter(function(item) {
+      return isSouvenirImplemented(item.id) && Boolean(ownedSouvenirs[item.id]);
+    }).length;
+  }
+
+  function getImplementedSouvenirCount() {
+    return SOUVENIRS.filter(function(item) { return isSouvenirImplemented(item.id); }).length;
+  }
+
+  function addAffinity(amount) {
+    affinity += amount;
+    totalAffinityEarned += amount;
+  }
+
+  function visitPlace(placeId) {
+    const place = getPlaceById(placeId);
+    if (!place) return;
+
+    outingCount += 1;
+    visitedPlaces[placeId] = (visitedPlaces[placeId] || 0) + 1;
+    lastPlace = placeId;
+    addAffinity(50);
+
+    outingStage.style.backgroundImage = 'url("' + place.image + '")';
+    placeLabel.textContent = place.name;
+    eventCharacter.classList.remove("visible");
+    eventCharacter.src = "";
+    eventCharacter.alt = "";
+
+    const unownedHere = getSouvenirsByPlace(placeId).filter(function(item) {
+      return isSouvenirImplemented(item.id) && !ownedSouvenirs[item.id];
+    });
+    const roll = Math.random();
+    let title = place.shortName;
+    let mainText = "";
+    let rewardText = "💖 +50";
+    let historyType = "talk";
+
+    if (false && unownedHere.length > 0 && roll < 0.22) {
+      const souvenir = pickRandom(unownedHere);
+      grantSouvenir(souvenir);
+      addAffinity(120);
+      title = "新しいお土産を入手しました";
+      mainText = "「" + souvenir.comment + "」\n\n" + souvenir.name + " を手に入れた。";
+      rewardText = "🎁 " + souvenir.name + "｜💖 +170";
+      historyType = "souvenir";
+    } else if (roll < 0.58) {
+      showCharacterForPlace(place);
+      const character = CHARACTER_EVENTS[place.character];
+      const pool = isLoverLevel() ? character.loverLines.concat(character.lines) : character.lines;
+      title = character.eventTitle || (character.name + "と出会いました");
+      mainText = pickRandom(pool);
+      rewardText = "💖 +50";
+      historyType = place.character;
+    } else if (roll < 0.78) {
+      title = place.shortName + "の小さな出来事";
+      mainText = pickRandom(place.eventLines);
+      rewardText = "💖 +50";
+      historyType = "event";
+    } else {
+      const linePool = isLoverLevel() ? place.loverLines : place.normalLines;
+      title = "サリムとの散策";
+      mainText = "「" + pickRandom(linePool) + "」";
+      rewardText = "💖 +50";
+      historyType = "salim";
+    }
+
+    messageTitle.textContent = title;
+    messageMain.textContent = mainText;
+    messageReward.textContent = rewardText;
+
+    eventHistory.push({
+      date: getLocalDateString(new Date()),
+      placeId: placeId,
+      type: historyType,
+      title: title
+    });
+
+    saveOutingData();
+    updateStatus();
+    renderSouvenirs();
+  }
+
+  function showCharacterForPlace(place) {
+    const character = CHARACTER_EVENTS[place.character];
+    if (!character) return;
+    eventCharacter.src = character.image;
+    eventCharacter.alt = character.name;
+    eventCharacter.classList.add("visible");
+  }
+
+
+  function getImplementedSouvenirHint(souvenir) {
+    if (!souvenir) return "条件を満たすと入手できます。";
+    if (souvenir.id === "palaceFlowerBookmark") return "王宮前庭園で花を育てると入手できます。";
+    if (souvenir.placeId === "perfumeStreet") return "香油通りの絵合わせで見つかるかもしれません。";
+    return "条件を満たすと入手できます。";
+  }
+
+  function getGardenStageFromCareDays() {
+    if (gardenStage <= 0) return 0;
+    if (gardenCareDays >= 7) return 5;
+    if (gardenCareDays >= 6) return 4;
+    if (gardenCareDays >= 4) return 3;
+    if (gardenCareDays >= 2) return 2;
+    return 1;
+  }
+
+  function clampGardenStage() {
+    gardenStage = Math.max(0, Math.min(GARDEN_STAGES.length - 1, Number(gardenStage) || 0));
+    gardenCareDays = Math.max(0, Number(gardenCareDays) || 0);
+    if (gardenStage > 0) {
+      gardenStage = getGardenStageFromCareDays();
+    }
+  }
+
+  function getGardenStageInfo() {
+    clampGardenStage();
+    return GARDEN_STAGES[gardenStage] || GARDEN_STAGES[0];
+  }
+
+
+  function openGardenGame() {
+    selectedPlaceId = "palaceGarden";
+    lastPlace = "palaceGarden";
+    renderGardenGame();
+    openModal("gardenGameMenu");
+    saveOutingData();
+  }
+
+  function renderGardenGame() {
+    const info = getGardenStageInfo();
+    if (gardenScene) gardenScene.style.backgroundImage = "linear-gradient(rgba(255,250,240,0.08), rgba(255,250,240,0.08)), url('" + GARDEN_IMAGES.background + "')";
+    if (gardenPlotImage) gardenPlotImage.src = GARDEN_IMAGES[info.key] || GARDEN_IMAGES.dry;
+    if (gardenStatus) {
+      const dayText = gardenStage <= 0 ? "未開始" : gardenCareDays + "日目";
+      gardenStatus.textContent = "月白花｜成長：" + dayText + "｜段階：" + info.label + "｜収穫：" + gardenHarvestCount + "回";
+    }
+    if (gardenCaption) gardenCaption.textContent = info.caption;
+    if (!gardenActions) return;
+
+    gardenActions.innerHTML = "";
+    const mainButton = document.createElement("button");
+    mainButton.type = "button";
+    mainButton.textContent = info.action;
+    mainButton.onclick = advanceGarden;
+    gardenActions.appendChild(mainButton);
+
+    const resetButton = document.createElement("button");
+    resetButton.type = "button";
+    resetButton.className = "secondary";
+    resetButton.textContent = "花壇を整える";
+    resetButton.onclick = resetGardenPlot;
+    gardenActions.appendChild(resetButton);
+  }
+
+  function advanceGarden() {
+    const today = getLocalDateString(new Date());
+    const beforeStage = gardenStage;
+
+    if (gardenStage <= 0) {
+      gardenStage = 1;
+      gardenCareDays = 0;
+      gardenLastWaterDate = "";
+      if (gardenLog) gardenLog.textContent = "サリム「月白花の種をまいたな。ここからは、水をやった日だけ少しずつ育つ。焦らず世話してやれ」";
+    } else if (gardenStage < GARDEN_STAGES.length - 1) {
+      if (gardenLastWaterDate === today) {
+        if (gardenLog) gardenLog.textContent = "サリム「今日はもう水をやっただろ。やりすぎても花が驚く。続きはまた明日だな」";
+        renderGardenGame();
+        saveOutingData();
+        return;
+      }
+
+      gardenLastWaterDate = today;
+      gardenWaterCount += 1;
+      gardenCareDays += 1;
+      gardenStage = getGardenStageFromCareDays();
+
+      if (gardenLog) {
+        if (gardenStage > beforeStage) {
+          if (gardenStage === 2) gardenLog.textContent = "サリム「芽が出たぞ。小さいが、ちゃんと生きてるんだな」";
+          else if (gardenStage === 3) gardenLog.textContent = "サリム「葉が増えてきた。お前、なかなか世話が上手いじゃないか」";
+          else if (gardenStage === 4) gardenLog.textContent = "サリム「月白花のつぼみだ。ここまで来ると、咲くのが楽しみになるな」";
+          else if (gardenStage === 5) gardenLog.textContent = "サリム「咲いたな。月白花……王宮の庭にもよく似合う、いい花だ」";
+        } else {
+          gardenLog.textContent = "サリム「水やり完了だ。今日の世話はこれで十分だな。少しずつ育っているぞ」";
+        }
+      }
+    } else {
+      gardenHarvestCount += 1;
+      const souvenir = getSouvenirById("palaceFlowerBookmark");
+      let rewardText = "";
+      if (souvenir && isSouvenirImplemented(souvenir.id) && !ownedSouvenirs[souvenir.id]) {
+        grantSouvenir(souvenir);
+        addAffinity(180);
+        rewardText = "\n\n王宮庭園の月白花押し栞 を手に入れた。\n🎁 " + souvenir.name + "｜💖 +180";
+        messageTitle.textContent = "新しいお土産を入手しました";
+        messageMain.textContent = "「月白花を気に入ったなら、これを持って帰るといい」";
+        messageReward.textContent = "🎁 " + souvenir.name + "｜💖 +180";
+      } else {
+        addAffinity(80);
+        rewardText = "\n\n月白花を収穫しました。💖 +80";
+        messageTitle.textContent = "月白花を収穫しました";
+        messageMain.textContent = "「綺麗に咲いたな。お前が育てた月白花だと思うと、少し特別に見える」";
+        messageReward.textContent = "💖 +80";
+      }
+      if (gardenLog) gardenLog.textContent = "サリム「よく育てたな。次の月白花も、また一緒に見に来るか」" + rewardText;
+      gardenStage = 0;
+      gardenCareDays = 0;
+      gardenLastWaterDate = "";
+    }
+
+    eventHistory.push({
+      date: getLocalDateString(new Date()),
+      placeId: "palaceGarden",
+      type: "garden",
+      title: gardenStage === 0 && beforeStage === 5 ? "月白花を収穫しました" : "王宮前庭園の花壇を世話しました"
+    });
+
+    saveOutingData();
+    updateStatus();
+    renderSouvenirs();
+    renderGardenGame();
+  }
+
+  function resetGardenPlot() {
+    const ok = window.confirm("花壇を空の状態に戻しますか？\n成長中の月白花はリセットされます。");
+    if (!ok) return;
+    gardenStage = 0;
+    gardenCareDays = 0;
+    gardenLastWaterDate = "";
+    if (gardenLog) gardenLog.textContent = "サリム「花壇を整え直したぞ。最初から育て直そう」";
+    saveOutingData();
+    renderGardenGame();
+  }
+
+
+  function startMiniGame(placeId) {
+    const config = MINI_GAMES[placeId];
+    const place = getPlaceById(placeId);
+    if (!config || !place) return;
+
+    outingStage.style.backgroundImage = "linear-gradient(rgba(255,250,240,0.06), rgba(255,250,240,0.06)), url('" + place.image + "')";
+    placeLabel.textContent = place.name;
+    if (outingNoteText) outingNoteText.textContent = place.miniNote || "ミニゲームでお土産を探してみましょう。";
+
+    miniGameTitle.textContent = config.title;
+    openModal("miniGameMenu");
+
+    if (config.type === "memory") {
+      startMemoryGame(config, place);
+      return;
+    }
+
+    if (config.type === "starCards") {
+      startStarCardsGame(config, place);
+      return;
+    }
+
+    const questions = shuffleArray(config.questions).slice(0, 3);
+    currentMiniGame = {
+      type: "quiz",
+      config: config,
+      place: place,
+      questions: questions,
+      index: 0,
+      correct: 0
+    };
+
+    renderMiniGameQuestion();
+  }
+
+  function startMemoryGame(config, place) {
+    const baseCards = config.cardSouvenirIds
+      .map(function(id) { return getSouvenirById(id); })
+      .filter(Boolean);
+
+    const cards = shuffleArray(baseCards.concat(baseCards).map(function(souvenir, index) {
+      return {
+        uid: souvenir.id + "-" + index,
+        souvenirId: souvenir.id,
+        image: souvenir.image,
+        name: souvenir.name,
+        flipped: false,
+        matched: false
+      };
+    }));
+
+    currentMiniGame = {
+      type: "memory",
+      config: config,
+      place: place,
+      cards: cards,
+      selectedCards: [],
+      moves: 0,
+      matchedPairs: 0,
+      locked: false
+    };
+
+    renderMemoryGame();
+  }
+
+  function renderMemoryGame() {
+    if (!currentMiniGame || currentMiniGame.type !== "memory") return;
+    const game = currentMiniGame;
+    const config = game.config;
+
+    miniGameStatus.textContent = config.intro + "\n手数：" + game.moves + " / " + config.handLimit + "｜そろえた数：" + game.matchedPairs + " / " + (game.cards.length / 2);
+    miniGameQuestion.textContent = "同じお土産のカードを2枚そろえてください。";
+    miniGameChoices.innerHTML = "";
+
+    const board = document.createElement("div");
+    board.className = "memory-game-board";
+
+    game.cards.forEach(function(card, index) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "memory-card" + (card.flipped ? " flipped" : "") + (card.matched ? " matched" : "");
+      button.setAttribute("aria-label", card.flipped || card.matched ? card.name : "伏せられたカード");
+      button.onclick = function() { flipMemoryCard(index); };
+
+      if (card.flipped || card.matched) {
+        const img = document.createElement("img");
+        img.src = card.image;
+        img.alt = card.name;
+        button.appendChild(img);
+      } else {
+        button.textContent = "✦";
+      }
+
+      board.appendChild(button);
+    });
+
+    const note = document.createElement("div");
+    note.className = "memory-result-note";
+    note.textContent = "8手以内にクリアすると、香油通りのお土産入手チャンス。";
+
+    miniGameChoices.appendChild(board);
+    miniGameChoices.appendChild(note);
+  }
+
+  function flipMemoryCard(index) {
+    if (!currentMiniGame || currentMiniGame.type !== "memory") return;
+    const game = currentMiniGame;
+    if (game.locked) return;
+
+    const card = game.cards[index];
+    if (!card || card.flipped || card.matched) return;
+
+    card.flipped = true;
+    game.selectedCards.push(index);
+    renderMemoryGame();
+
+    if (game.selectedCards.length < 2) return;
+
+    game.moves += 1;
+    const first = game.cards[game.selectedCards[0]];
+    const second = game.cards[game.selectedCards[1]];
+
+    if (first.souvenirId === second.souvenirId) {
+      first.matched = true;
+      second.matched = true;
+      game.selectedCards = [];
+      game.matchedPairs += 1;
+      renderMemoryGame();
+
+      if (game.matchedPairs >= game.cards.length / 2) {
+        setTimeout(finishMemoryGame, 350);
+      }
+    } else {
+      game.locked = true;
+      setTimeout(function() {
+        first.flipped = false;
+        second.flipped = false;
+        game.selectedCards = [];
+        game.locked = false;
+        renderMemoryGame();
+      }, 700);
+    }
+  }
+
+  function finishMemoryGame() {
+    if (!currentMiniGame || currentMiniGame.type !== "memory") return;
+
+    const game = currentMiniGame;
+    const config = game.config;
+    const place = game.place;
+    const success = game.moves <= config.handLimit;
+    closeModal("miniGameMenu");
+
+    let title = success ? "絵合わせ成功！" : "絵合わせクリア";
+    let mainText = "";
+    let rewardText = "";
+    let historyType = success ? "memory-success" : "memory-clear";
+
+    if (success) {
+      const unownedHere = getSouvenirsByPlace(place.id).filter(function(item) {
+        return isSouvenirImplemented(item.id) && !ownedSouvenirs[item.id];
+      });
+      if (unownedHere.length > 0) {
+        const souvenir = pickRandom(unownedHere);
+        grantSouvenir(souvenir);
+        addAffinity(150);
+        mainText = config.successLine + "\n\n" + souvenir.name + " を手に入れた。";
+        rewardText = "🎁 " + souvenir.name + "｜手数 " + game.moves + "｜💖 +150";
+        historyType = "memory-souvenir";
+      } else {
+        addAffinity(120);
+        mainText = config.successLine + "\n\n香油通りのお土産は、もう全部集めている。";
+        rewardText = "お土産コンプリート済み｜手数 " + game.moves + "｜💖 +120";
+      }
+    } else {
+      addAffinity(50);
+      mainText = config.slowClearLine + "\n\n8手以内なら、お土産が見つかるかもしれない。";
+      rewardText = "手数 " + game.moves + "｜💖 +50";
+    }
+
+    messageTitle.textContent = title;
+    messageMain.textContent = mainText;
+    messageReward.textContent = rewardText;
+
+    eventHistory.push({
+      date: getLocalDateString(new Date()),
+      placeId: place.id,
+      type: historyType,
+      title: title
+    });
+
+    currentMiniGame = null;
+    saveOutingData();
+    updateStatus();
+    renderSouvenirs();
+  }
+
+  function getStarCardById(cardId) {
+    return STAR_CARDS.find(function(card) { return card.id === cardId; }) || null;
+  }
+
+  function getStarCardTurnNumber(game) {
+    return game.playerWins + game.salimWins + 1;
+  }
+
+  function startStarCardsGame(config, place) {
+    currentMiniGame = {
+      type: "starCards",
+      config: config,
+      place: place,
+      playerWins: 0,
+      salimWins: 0,
+      state: "choose",
+      salimCard: pickRandom(STAR_CARDS),
+      playerCard: null,
+      resultText: ""
+    };
+    renderStarCardsGame();
+  }
+
+  function createStarCard(card, owner, selectable) {
+    const element = document.createElement(selectable ? "button" : "div");
+    if (selectable) element.type = "button";
+    element.className = "star-card star-card-" + card.id;
+    element.setAttribute("aria-label", owner + "の" + card.name + "札");
+
+    const ownerLabel = document.createElement("div");
+    ownerLabel.className = "star-card-owner";
+    ownerLabel.textContent = owner;
+
+    const symbol = document.createElement("div");
+    symbol.className = "celestial-symbol " + card.id;
+    symbol.setAttribute("aria-hidden", "true");
+
+    const label = document.createElement("div");
+    label.className = "star-card-label";
+    label.textContent = card.name + "札";
+
+    element.appendChild(ownerLabel);
+    element.appendChild(symbol);
+    element.appendChild(label);
+    return element;
+  }
+
+  function createStarCardBack() {
+    const element = document.createElement("div");
+    element.className = "star-card star-card-back";
+    element.setAttribute("aria-label", "サリムの伏せられた札");
+
+    const mark = document.createElement("div");
+    mark.className = "star-card-back-mark";
+    mark.setAttribute("aria-hidden", "true");
+
+    const label = document.createElement("div");
+    label.className = "star-card-label";
+    label.textContent = "伏せ札";
+
+    element.appendChild(mark);
+    element.appendChild(label);
+    return element;
+  }
+
+  function renderStarCardsGame() {
+    if (!currentMiniGame || currentMiniGame.type !== "starCards") return;
+    const game = currentMiniGame;
+    const config = game.config;
+    const finalRound = game.playerWins >= 2 || game.salimWins >= 2;
+
+    miniGameStatus.textContent = config.intro + "\nあなた " + game.playerWins + "勝 ｜ サリム " + game.salimWins + "勝";
+    miniGameQuestion.textContent = "太陽は星に勝ち、星は月に勝ち、月は太陽に勝つ。\n同じ札ならあいこ。もう一度札を出します。";
+    miniGameChoices.innerHTML = "";
+
+    const gameArea = document.createElement("div");
+    gameArea.className = "star-card-game";
+
+    const score = document.createElement("div");
+    score.className = "star-card-score";
+    score.innerHTML = "あなた <strong>" + game.playerWins + "</strong> 勝　—　サリム <strong>" + game.salimWins + "</strong> 勝";
+    gameArea.appendChild(score);
+
+    if (game.state === "choose") {
+      const hint = document.createElement("div");
+      hint.className = "star-card-hint";
+      hint.textContent = "第" + getStarCardTurnNumber(game) + "勝負\n" + game.salimCard.hint + "\n\nどの札を出す？";
+      gameArea.appendChild(hint);
+
+      const backArea = document.createElement("div");
+      backArea.className = "star-card-reveal";
+      backArea.appendChild(createStarCardBack());
+      gameArea.appendChild(backArea);
+
+      const hand = document.createElement("div");
+      hand.className = "star-card-hand";
+      shuffleArray(STAR_CARDS).forEach(function(card) {
+        const button = createStarCard(card, "あなた", true);
+        button.onclick = function() { playStarCard(card.id); };
+        hand.appendChild(button);
+      });
+      gameArea.appendChild(hand);
+    } else {
+      const result = document.createElement("div");
+      result.className = "star-card-result";
+      result.textContent = game.resultText;
+      gameArea.appendChild(result);
+
+      const reveal = document.createElement("div");
+      reveal.className = "star-card-reveal";
+      reveal.appendChild(createStarCard(game.playerCard, "あなた", false));
+      reveal.appendChild(createStarCard(game.salimCard, "サリム", false));
+      gameArea.appendChild(reveal);
+
+      const nextButton = document.createElement("button");
+      nextButton.type = "button";
+      if (finalRound) {
+        nextButton.textContent = "結果を見る";
+        nextButton.onclick = finishStarCardsGame;
+      } else {
+        nextButton.textContent = game.playerCard.id === game.salimCard.id ? "もう一度札を出す" : "次の勝負へ";
+        nextButton.onclick = startNextStarCardTurn;
+      }
+      gameArea.appendChild(nextButton);
+    }
+
+    miniGameChoices.appendChild(gameArea);
+  }
+
+  function playStarCard(cardId) {
+    if (!currentMiniGame || currentMiniGame.type !== "starCards" || currentMiniGame.state !== "choose") return;
+    const game = currentMiniGame;
+    const playerCard = getStarCardById(cardId);
+    if (!playerCard || !game.salimCard) return;
+
+    game.playerCard = playerCard;
+    game.state = "result";
+
+    if (playerCard.id === game.salimCard.id) {
+      game.resultText = "あいこ！\nサリム「同じ札か。気が合うな……だが、勝負は決まっていない」";
+    } else if (playerCard.beats === game.salimCard.id) {
+      game.playerWins += 1;
+      game.resultText = "あなたの勝ち！\nサリム「なるほど。俺の言葉を、ちゃんと聞いていたわけだ」";
+    } else {
+      game.salimWins += 1;
+      game.resultText = "サリムの勝ち。\nサリム「惜しいな。だが、次はどう出る？」";
+    }
+
+    renderStarCardsGame();
+  }
+
+  function startNextStarCardTurn() {
+    if (!currentMiniGame || currentMiniGame.type !== "starCards") return;
+    currentMiniGame.state = "choose";
+    currentMiniGame.playerCard = null;
+    currentMiniGame.salimCard = pickRandom(STAR_CARDS);
+    currentMiniGame.resultText = "";
+    renderStarCardsGame();
+  }
+
+  function finishStarCardsGame() {
+    if (!currentMiniGame || currentMiniGame.type !== "starCards") return;
+
+    const game = currentMiniGame;
+    const config = game.config;
+    const place = game.place;
+    const success = game.playerWins >= 2;
+    closeModal("miniGameMenu");
+
+    let title = success ? "星巡り札 勝利！" : "星巡り札 終了";
+    let mainText = "";
+    let rewardText = "";
+    let historyType = success ? "star-cards-success" : "star-cards-fail";
+
+    if (success) {
+      const unownedHere = getSouvenirsByPlace(place.id).filter(function(item) {
+        return isSouvenirImplemented(item.id) && !ownedSouvenirs[item.id];
+      });
+      if (unownedHere.length > 0) {
+        const souvenir = pickRandom(unownedHere);
+        grantSouvenir(souvenir);
+        addAffinity(150);
+        mainText = config.successLine + "\n\n" + souvenir.name + " を手に入れた。";
+        rewardText = "🎁 " + souvenir.name + "｜💖 +150";
+        historyType = "star-cards-souvenir";
+      } else {
+        addAffinity(120);
+        mainText = config.successLine + "\n\n星見の丘のお土産は、もう全部集めている。";
+        rewardText = "お土産コンプリート済み｜💖 +120";
+      }
+    } else {
+      addAffinity(30);
+      mainText = config.failLine;
+      rewardText = "💖 +30";
+    }
+
+    messageTitle.textContent = title;
+    messageMain.textContent = mainText;
+    messageReward.textContent = rewardText;
+
+    eventHistory.push({
+      date: getLocalDateString(new Date()),
+      placeId: place.id,
+      type: historyType,
+      title: title
+    });
+
+    currentMiniGame = null;
+    saveOutingData();
+    updateStatus();
+    renderSouvenirs();
+  }
+
+  function renderMiniGameQuestion() {
+    if (!currentMiniGame) return;
+    const config = currentMiniGame.config;
+
+    if (currentMiniGame.index >= currentMiniGame.questions.length) {
+      finishMiniGame();
+      return;
+    }
+
+    const question = currentMiniGame.questions[currentMiniGame.index];
+    miniGameStatus.textContent = config.intro + "\n" + (currentMiniGame.index + 1) + "問目 / " + currentMiniGame.questions.length + "｜正解 " + currentMiniGame.correct + "問";
+    miniGameQuestion.textContent = question.text;
+    miniGameChoices.innerHTML = "";
+
+    question.choices.forEach(function(choice, choiceIndex) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = choice;
+      button.onclick = function() { answerMiniGame(choiceIndex); };
+      miniGameChoices.appendChild(button);
+    });
+  }
+
+  function answerMiniGame(choiceIndex) {
+    if (!currentMiniGame) return;
+    const question = currentMiniGame.questions[currentMiniGame.index];
+    if (choiceIndex === question.answer) currentMiniGame.correct += 1;
+    currentMiniGame.index += 1;
+    renderMiniGameQuestion();
+  }
+
+  function finishMiniGame() {
+    if (!currentMiniGame) return;
+
+    const config = currentMiniGame.config;
+    const place = currentMiniGame.place;
+    const success = currentMiniGame.correct >= config.successNeed;
+    closeModal("miniGameMenu");
+
+    let title = success ? "ミニゲーム成功！" : "ミニゲーム失敗";
+    let mainText = "";
+    let rewardText = "";
+    let historyType = success ? "minigame-success" : "minigame-fail";
+
+    if (success) {
+      const unownedHere = getSouvenirsByPlace(place.id).filter(function(item) {
+        return isSouvenirImplemented(item.id) && !ownedSouvenirs[item.id];
+      });
+      if (unownedHere.length > 0) {
+        const souvenir = pickRandom(unownedHere);
+        grantSouvenir(souvenir);
+        addAffinity(150);
+        mainText = config.successLine + "\n\n" + souvenir.name + " を手に入れた。";
+        rewardText = "🎁 " + souvenir.name + "｜💖 +150";
+        historyType = "minigame-souvenir";
+      } else {
+        addAffinity(120);
+        mainText = config.successLine + "\n\nこの場所のお土産は、もう全部集めている。";
+        rewardText = "お土産コンプリート済み｜💖 +120";
+      }
+    } else {
+      addAffinity(30);
+      mainText = config.failLine;
+      rewardText = "💖 +30";
+    }
+
+    messageTitle.textContent = title;
+    messageMain.textContent = mainText;
+    messageReward.textContent = rewardText;
+
+    eventHistory.push({
+      date: getLocalDateString(new Date()),
+      placeId: place.id,
+      type: historyType,
+      title: title
+    });
+
+    currentMiniGame = null;
+    saveOutingData();
+    updateStatus();
+    renderSouvenirs();
+  }
+
+  function grantSouvenir(souvenir) {
+    ownedSouvenirs[souvenir.id] = {
+      id: souvenir.id,
+      date: getLocalDateString(new Date()),
+      placeId: souvenir.placeId,
+      placeName: souvenir.placeName
+    };
+    souvenirDates[souvenir.id] = ownedSouvenirs[souvenir.id].date;
+  }
+
+  function shuffleArray(array) {
+    const copy = array.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = copy[i];
+      copy[i] = copy[j];
+      copy[j] = temp;
+    }
+    return copy;
+  }
+
+  function selectPlace(placeId) {
+    const place = getPlaceById(placeId);
+    if (!place) return;
+    selectedPlaceId = place.id;
+    lastPlace = place.id;
+    outingStage.style.backgroundImage = "linear-gradient(rgba(255,250,240,0.06), rgba(255,250,240,0.06)), url('" + place.image + "')";
+    placeLabel.textContent = place.name;
+    if (outingNoteText) outingNoteText.textContent = place.miniNote || "サリムと一緒に、ラズレムの街を散策中です。";
+    eventCharacter.classList.remove("visible");
+    eventCharacter.src = "";
+    eventCharacter.alt = "";
+    messageTitle.textContent = place.shortName;
+    messageMain.textContent = "「ここが" + place.shortName + "だ。さて、どう楽しむ？」";
+    messageReward.textContent = place.id === "palaceGarden" ? "散策するか、花を育てられます。" : "散策するか、ミニゲームを遊べます。";
+    showPlaceScreen();
+    renderPlaces();
+    renderSelectedPlacePanel();
+    saveOutingData();
+  }
+
+  function showMapScreen() {
+    if (mapPanel) mapPanel.style.display = "";
+    if (placeView) placeView.classList.remove("active");
+    messageTitle.textContent = "ラズレム散策マップ";
+    messageMain.textContent = "「さて、どこへ行きたい？　俺が案内してやる」";
+    messageReward.textContent = "マップ上の行き先を選んでください。";
+  }
+
+  function showPlaceScreen() {
+    if (mapPanel) mapPanel.style.display = "none";
+    if (placeView) placeView.classList.add("active");
+  }
+
+  function renderSelectedPlacePanel() {
+    if (!selectedPlacePanel) return;
+    const place = getPlaceById(selectedPlaceId) || PLACES[0];
+    if (!place) return;
+
+    selectedPlacePanel.innerHTML = "";
+
+    const title = document.createElement("div");
+    title.className = "selected-place-title";
+    title.textContent = place.name;
+
+    const desc = document.createElement("div");
+    desc.className = "selected-place-desc";
+    desc.textContent = place.desc;
+
+    const actions = document.createElement("div");
+    actions.className = "selected-place-actions";
+
+    const visitButton = document.createElement("button");
+    visitButton.type = "button";
+    visitButton.textContent = "散策する";
+    visitButton.onclick = function() { visitPlace(place.id); };
+    actions.appendChild(visitButton);
+
+    if (place.id === "palaceGarden") {
+      const gardenButton = document.createElement("button");
+      gardenButton.type = "button";
+      gardenButton.className = "mini-game-button";
+      gardenButton.textContent = "花を育てる";
+      gardenButton.onclick = function() { openGardenGame(); };
+      actions.appendChild(gardenButton);
+    }
+
+    if (MINI_GAMES[place.id]) {
+      const miniButton = document.createElement("button");
+      miniButton.type = "button";
+      miniButton.className = "mini-game-button";
+      miniButton.textContent = "ミニゲーム";
+      miniButton.onclick = function() { startMiniGame(place.id); };
+      actions.appendChild(miniButton);
+    }
+
+    selectedPlacePanel.appendChild(title);
+    selectedPlacePanel.appendChild(desc);
+    selectedPlacePanel.appendChild(actions);
+  }
+
+  function renderPlaces() {
+    placeGrid.innerHTML = "";
+    PLACES.forEach(function(place) {
+      const pos = MAP_POSITIONS[place.id] || { left: 50, top: 50 };
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "map-pin" + (place.id === selectedPlaceId ? " selected" : "");
+      button.textContent = place.shortName;
+      button.style.left = pos.left + "%";
+      button.style.top = pos.top + "%";
+      button.onclick = function() { selectPlace(place.id); };
+      placeGrid.appendChild(button);
+    });
+  }
+
+  function updateStatus() {
+    const level = getLevel();
+    levelBox.textContent = "Lv." + level + "｜" + getRelationshipName(level);
+    outingCountText.textContent = formatNumber(outingCount);
+    souvenirCountText.textContent = getOwnedSouvenirCount() + " / " + getImplementedSouvenirCount();
+    souvenirSummary.textContent = "集めたお土産：" + getOwnedSouvenirCount() + " / " + getImplementedSouvenirCount() + "（未実装のお土産は今後追加予定）";
+  }
+
+  function renderSouvenirs() {
+    if (!souvenirGrid) return;
+    souvenirGrid.innerHTML = "";
+    SOUVENIRS.forEach(function(souvenir) {
+      const record = ownedSouvenirs[souvenir.id];
+      const implemented = isSouvenirImplemented(souvenir.id);
+      const owned = Boolean(record) && implemented;
+
+      const card = document.createElement("div");
+      card.className = "souvenir-card" + (owned ? "" : " locked");
+
+      const icon = document.createElement("div");
+      icon.className = "souvenir-icon";
+      if (owned) {
+        const img = document.createElement("img");
+        img.src = souvenir.image;
+        img.alt = souvenir.name;
+        icon.appendChild(img);
+        icon.onclick = function() { openSouvenirViewer(souvenir.id); };
+      } else {
+        icon.textContent = "？";
+      }
+
+      const body = document.createElement("div");
+      const name = document.createElement("div");
+      name.className = "souvenir-name";
+      name.textContent = owned ? souvenir.name : "？？？";
+      const meta = document.createElement("div");
+      meta.className = "souvenir-meta";
+      meta.textContent = owned ? "入手日：" + record.date + "｜" + souvenir.placeName : (implemented ? "入手場所：" + souvenir.placeName : "未実装：今後のアップデートで入手可能予定");
+      const desc = document.createElement("div");
+      desc.className = "souvenir-desc";
+      desc.textContent = owned ? souvenir.description : (implemented ? getImplementedSouvenirHint(souvenir) : "まだ入手できません。");
+      const comment = document.createElement("div");
+      comment.className = "souvenir-comment";
+      comment.textContent = owned ? "「" + souvenir.comment + "」" : "「？？？」";
+
+      body.appendChild(name);
+      body.appendChild(meta);
+      body.appendChild(desc);
+      body.appendChild(comment);
+      card.appendChild(icon);
+      card.appendChild(body);
+
+      if (owned) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "大きく見る";
+        button.onclick = function() { openSouvenirViewer(souvenir.id); };
+        card.appendChild(button);
+      }
+
+      souvenirGrid.appendChild(card);
+    });
+  }
+
+  function getSouvenirById(souvenirId) {
+    return SOUVENIRS.find(function(item) { return item.id === souvenirId; }) || null;
+  }
+
+  function openSouvenirViewer(souvenirId) {
+    const souvenir = getSouvenirById(souvenirId);
+    if (!souvenir || !isSouvenirImplemented(souvenirId) || !ownedSouvenirs[souvenirId]) return;
+    viewerTitle.textContent = souvenir.name;
+    viewerImage.src = souvenir.image;
+    viewerImage.alt = souvenir.name;
+    openModal("souvenirViewer");
+  }
+
+  function openSouvenirMenu() {
+    renderSouvenirs();
+    updateStatus();
+    openModal("souvenirMenu");
+  }
+
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    if (!document.querySelector(".modal-overlay.open")) document.body.style.overflow = "";
+  }
+
+  function closeModalFromBackdrop(event, id) {
+    if (event.target && event.target.id === id) closeModal(id);
+  }
+
+  function initialize() {
+    renderSouvenirs();
+    updateStatus();
+    const initialPlace = getPlaceById(selectedPlaceId) || PLACES[0];
+    if (initialPlace) {
+      selectedPlaceId = initialPlace.id;
+      outingStage.style.backgroundImage = 'url("' + initialPlace.image + '")';
+      placeLabel.textContent = initialPlace.name;
+      if (outingNoteText) outingNoteText.textContent = initialPlace.miniNote || "行き先を選ぶと、その場所の見どころが表示されます。";
+    }
+    renderPlaces();
+    renderSelectedPlacePanel();
+    showMapScreen();
+  }
+
+  initialize();
+</script>
+</body>
+</html>
